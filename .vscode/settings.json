@@ -1,0 +1,19 @@
+{
+    "editor.rulers": [
+        {
+            "color": "#f7878757",
+            "column": 88
+        }
+    ],
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "flake8.args": [
+        "--max-line-length=88"
+    ],
+    "python.testing.pytestArgs": [
+        "."
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+}
