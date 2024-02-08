@@ -22,13 +22,49 @@ class TestSaveInMemoryCategoryRepository:
 
 class TestGetByIdInMemoryCategoryRepository:
     def test_can_get_by_id_category(self):
-        category = Category(
-            name="Dummy",
-            description="Dummy description",
+        movie_category = Category(
+            name="Movie",
+            description="Movie description",
             is_active=True,
         )
-        repository = InMemoryCategoryRepository(categories=[category])
+        serie_category = Category(
+            name="Series",
+            description="Serie description",
+            is_active=True,
+        )
 
-        found_category = repository.get_by_id(id=category.id)
+        repository = InMemoryCategoryRepository(
+            categories=[
+                movie_category,
+                serie_category,
+            ]
+        )
 
-        assert category == found_category
+        found_category = repository.get_by_id(id=movie_category.id)
+
+        assert movie_category == found_category
+
+
+class TestDeleteInMemoryCategoryRepository:
+    def test_can_delete_category(self):
+        movie_category = Category(
+            name="Movie",
+            description="Movie description",
+            is_active=True,
+        )
+        serie_category = Category(
+            name="Series",
+            description="Serie description",
+            is_active=True,
+        )
+
+        repository = InMemoryCategoryRepository(
+            categories=[
+                movie_category,
+                serie_category,
+            ]
+        )
+
+        repository.delete(id=movie_category.id)
+
+        assert repository.categories == [serie_category]

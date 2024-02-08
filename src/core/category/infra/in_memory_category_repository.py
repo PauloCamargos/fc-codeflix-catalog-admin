@@ -25,3 +25,7 @@ class InMemoryCategoryRepository(AbstractCategoryRepository):
 
     def get_by_id(self, id: UUID) -> Optional[Category]:
         return self._categories.get(id)
+
+    def delete(self, id: UUID) -> None:
+        if id in self._categories:
+            del self._categories[id]
