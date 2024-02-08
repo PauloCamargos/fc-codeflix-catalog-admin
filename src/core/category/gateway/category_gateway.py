@@ -13,3 +13,7 @@ class AbstractCategoryRepository(ABC):
     @abstractmethod
     def get_by_id(self, id: UUID) -> Optional[Category]:
         raise NotImplementedError
+
+    @abstractmethod
+    def delete(self, id: UUID) -> None:
+        raise NotImplementedError
