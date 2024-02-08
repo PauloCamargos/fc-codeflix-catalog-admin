@@ -18,7 +18,7 @@ class CreateCategoryOutput:
     id: UUID
 
 
-class CreateCategoryUserCase:
+class CreateCategory:
     def __init__(
         self,
         repository: AbstractCategoryRepository,

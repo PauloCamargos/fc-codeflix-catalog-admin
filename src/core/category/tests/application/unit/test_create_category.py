@@ -2,17 +2,17 @@ from unittest.mock import MagicMock, call
 import pytest
 from src.core.category.application.create_category import (
     CreateCategoryInput,
-    CreateCategoryUserCase,
+    CreateCategory,
 )
 from src.core.category.application.errors import InvalidCategoryData
 from src.core.category.domain.category import Category
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
-class TestUseCaseCreateCategory:
-    def test_use_case_create_category_with_valid_data_success(self) -> None:
+class TestCreateCategory:
+    def test_create_category_with_valid_data_success(self) -> None:
         mocked_repository = MagicMock(AbstractCategoryRepository)
-        create_category_use_case = CreateCategoryUserCase(repository=mocked_repository)
+        create_category = CreateCategory(repository=mocked_repository)
 
         create_category_input = CreateCategoryInput(
             name="Movie",
@@ -20,7 +20,7 @@ class TestUseCaseCreateCategory:
             is_active=True,
         )
 
-        create_category_output = create_category_use_case.execute(create_category_input)
+        create_category_output = create_category.execute(create_category_input)
 
         expected_call_args_list = [
             call(
@@ -36,9 +36,9 @@ class TestUseCaseCreateCategory:
 
         assert create_category_output.id is not None, "category_id should not be None"
 
-    def test_use_case_create_category_with_invalid_data_error(self) -> None:
+    def test_create_category_with_invalid_data_error(self) -> None:
         mocked_repository = MagicMock(AbstractCategoryRepository)
-        create_category_use_case = CreateCategoryUserCase(repository=mocked_repository)
+        create_category = CreateCategory(repository=mocked_repository)
 
         create_category_input = CreateCategoryInput(
             name="",
@@ -47,6 +47,6 @@ class TestUseCaseCreateCategory:
         )
 
         with pytest.raises(InvalidCategoryData, match="'name' must not be empty"):
-            create_category_use_case.execute(create_category_input)
+            create_category.execute(create_category_input)
 
         assert mocked_repository.save.call_args_list == []
