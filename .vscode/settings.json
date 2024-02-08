@@ -21,4 +21,9 @@
     "python.analysis.autoFormatStrings": true,
     "python.analysis.inlayHints.functionReturnTypes": true,
     "python.analysis.inlayHints.variableTypes": true,
+    "isort.check": true,
+    "isort.args": [
+        "--settings-file",
+        "${workspaceFolder}/setup.cfg"
+    ],
 }
