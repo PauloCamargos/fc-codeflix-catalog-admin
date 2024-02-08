@@ -5,8 +5,8 @@ from src.core.category.gateway.category_gateway import (
 
 
 class InMemoryCategoryRepository(AbstractCategoryRepository):
-    def __init__(self, categories: list[Category] = None) -> None:
-        self.categories = categories or []
+    def __init__(self, categories: list[Category] | None = None) -> None:
+        self.categories: list[Category] = categories or []
 
     def save(self, category: Category) -> None:
         self.categories.append(category)

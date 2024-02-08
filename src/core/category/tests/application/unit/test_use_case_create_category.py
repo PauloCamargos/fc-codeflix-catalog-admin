@@ -49,5 +49,4 @@ class TestUseCaseCreateCategory:
         with pytest.raises(InvalidCategoryData, match="'name' must not be empty"):
             create_category_use_case.execute(create_category_input)
 
-        expected_call_args_list = []
-        assert mocked_repository.save.call_args_list == expected_call_args_list
+        assert mocked_repository.save.call_args_list == []
