@@ -11,5 +11,5 @@ class AbstractCategoryRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get(self, id: UUID) -> Optional[Category]:
+    def get_by_id(self, id: UUID) -> Optional[Category]:
         raise NotImplementedError

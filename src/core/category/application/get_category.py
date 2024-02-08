@@ -23,7 +23,7 @@ class GetCategory:
         self.repository: AbstractCategoryRepository = repository
 
     def execute(self, input: GetCategoryInput) -> Optional[GetCategoryOutput]:
-        category = self.repository.get(id=input.id)
+        category = self.repository.get_by_id(id=input.id)
 
         if category is None:
             return None

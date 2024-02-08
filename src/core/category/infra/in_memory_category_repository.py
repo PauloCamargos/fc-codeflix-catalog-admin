@@ -22,5 +22,5 @@ class InMemoryCategoryRepository(AbstractCategoryRepository):
     def save(self, category: Category) -> None:
         self._categories[category.id] = category
 
-    def get(self, id: UUID) -> None:
+    def get_by_id(self, id: UUID) -> None:
         return self._categories.get(id)
