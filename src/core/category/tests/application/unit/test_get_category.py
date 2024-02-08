@@ -41,7 +41,7 @@ class TestGetCategoryIntegration:
 
     def test_get_category_by_id_does_not_exist_error(self) -> None:
         repository = MagicMock(AbstractCategoryRepository)
-        repository.get_by_id.side_effect = CategoryNotFound()
+        repository.get_by_id.return_value = None
 
         does_not_exist_id = uuid4()
         get_category_input = GetCategoryInput(id=does_not_exist_id)
