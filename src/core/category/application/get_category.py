@@ -3,6 +3,7 @@ from typing import Optional
 from uuid import UUID
 
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
+from src.core.category.gateway.errors import DoesNotExist
 
 
 @dataclass
@@ -23,9 +24,9 @@ class GetCategory:
         self.repository: AbstractCategoryRepository = repository
 
     def execute(self, input: GetCategoryInput) -> Optional[GetCategoryOutput]:
-        category = self.repository.get_by_id(id=input.id)
-
-        if category is None:
+        try:
+            category = self.repository.get_by_id(id=input.id)
+        except DoesNotExist:
             return None
 
         return GetCategoryOutput(
