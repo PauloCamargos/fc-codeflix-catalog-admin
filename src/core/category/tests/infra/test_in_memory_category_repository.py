@@ -4,7 +4,7 @@ from src.core.category.infra.in_memory_category_repository import (
 )
 
 
-class TestInMemoryCategoryRepository:
+class TestSaveInMemoryCategoryRepository:
     def test_can_save_entity_category(self):
         repository = InMemoryCategoryRepository()
 
@@ -18,3 +18,17 @@ class TestInMemoryCategoryRepository:
 
         assert category in repository.categories
         assert len(repository.categories) == 1
+
+
+class TestGetByIdInMemoryCategoryRepository:
+    def test_can_get_by_id_category(self):
+        category = Category(
+            name="Dummy",
+            description="Dummy description",
+            is_active=True,
+        )
+        repository = InMemoryCategoryRepository(categories=[category])
+
+        found_category = repository.get_by_id(id=category.id)
+
+        assert category == found_category
