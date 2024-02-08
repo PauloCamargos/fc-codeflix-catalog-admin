@@ -18,7 +18,7 @@ class InMemoryCategoryRepository(AbstractCategoryRepository):
 
     @property
     def categories(self) -> list[Category]:
-        return self._categories.values()
+        return list(self._categories.values())
 
     def save(self, category: Category) -> None:
         self._categories[category.id] = category
