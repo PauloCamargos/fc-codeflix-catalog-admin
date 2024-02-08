@@ -1,9 +1,8 @@
 from dataclasses import dataclass
-from typing import Optional
 from uuid import UUID
+from src.core.category.application.errors import CategoryNotFound
 
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
-from src.core.category.gateway.errors import DoesNotExist
 
 
 @dataclass
@@ -23,11 +22,11 @@ class GetCategory:
     def __init__(self, repository: AbstractCategoryRepository) -> None:
         self.repository: AbstractCategoryRepository = repository
 
-    def execute(self, input: GetCategoryInput) -> Optional[GetCategoryOutput]:
-        try:
-            category = self.repository.get_by_id(id=input.id)
-        except DoesNotExist:
-            return None
+    def execute(self, input: GetCategoryInput) -> GetCategoryOutput | None:
+        category = self.repository.get_by_id(id=input.id)
+
+        if category is None:
+            raise CategoryNotFound()
 
         return GetCategoryOutput(
             id=category.id,

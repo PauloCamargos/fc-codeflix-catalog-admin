@@ -1,9 +1,9 @@
+from typing import Optional
 from uuid import UUID
 from src.core.category.domain.category import Category
 from src.core.category.gateway.category_gateway import (
     AbstractCategoryRepository,
 )
-from src.core.category.gateway.errors import DoesNotExist
 
 
 class InMemoryCategoryRepository(AbstractCategoryRepository):
@@ -23,10 +23,5 @@ class InMemoryCategoryRepository(AbstractCategoryRepository):
     def save(self, category: Category) -> None:
         self._categories[category.id] = category
 
-    def get_by_id(self, id: UUID) -> Category:
-        try:
-            category = self._categories[id]
-        except KeyError as err:
-            raise DoesNotExist(err)
-
-        return category
+    def get_by_id(self, id: UUID) -> Optional[Category]:
+        return self._categories.get(id)

@@ -1,4 +1,7 @@
 from uuid import uuid4
+
+import pytest
+from src.core.category.application.errors import CategoryNotFound
 from src.core.category.application.get_category import (
     GetCategoryInput,
     GetCategoryOutput,
@@ -63,6 +66,5 @@ class TestGetCategoryIntegration:
         get_category_input = GetCategoryInput(id=uuid4())
         get_category = GetCategory(repository=repository)
 
-        get_category_output = get_category.execute(get_category_input)
-
-        assert get_category_output is None
+        with pytest.raises(CategoryNotFound):
+            get_category.execute(get_category_input)
