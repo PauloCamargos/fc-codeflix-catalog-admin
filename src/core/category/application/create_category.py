@@ -3,9 +3,7 @@ from uuid import UUID
 from src.core.category.application.errors import InvalidCategoryData
 
 from src.core.category.domain.category import Category
-from src.core.category.infra.in_memory_category_repository import (
-    InMemoryCategoryRepository,
-)
+from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
 @dataclass
@@ -23,9 +21,9 @@ class CreateCategoryOutput:
 class CreateCategoryUserCase:
     def __init__(
         self,
-        repository: InMemoryCategoryRepository,
+        repository: AbstractCategoryRepository,
     ) -> None:
-        self.repository = repository
+        self.repository: AbstractCategoryRepository = repository
 
     def execute(self, input: CreateCategoryInput) -> CreateCategoryOutput:
         try:
@@ -39,4 +37,4 @@ class CreateCategoryUserCase:
         else:
             self.repository.save(category)
 
-        return category.id
+        return CreateCategoryOutput(id=category.id)

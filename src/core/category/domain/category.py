@@ -13,20 +13,20 @@ class Category:
     is_active: bool = field(default=DEFAULT_CATEGORY_IS_ACTIVE, compare=False)
     id: UUID = field(default_factory=uuid4)
 
-    def activate(self):
+    def activate(self) -> None:
         self.is_active = True
         self.validate()
 
-    def deactivate(self):
+    def deactivate(self) -> None:
         self.is_active = False
         self.validate()
 
-    def update_category(self, name: str, description: str):
+    def update_category(self, name: str, description: str) -> None:
         self.name = name
         self.description = description
         self.validate()
 
-    def validate(self):
+    def validate(self) -> None:
         if len(self.name) > MAX_CATEGORY_NAME_NUM_CARACTERS:
             raise ValueError(
                 "'name' must have less than "
@@ -39,8 +39,8 @@ class Category:
     def __post_init__(self):
         self.validate()
 
-    def __str__(self):
-        prefixes = []
+    def __str__(self) -> str:
+        prefixes: list[str] = []
         if not self.is_active:
             prefixes.append("DEACTIVATED")
 
