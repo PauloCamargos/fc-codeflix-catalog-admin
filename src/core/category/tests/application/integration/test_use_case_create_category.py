@@ -1,7 +1,9 @@
+import pytest
 from src.core.category.application.create_category import (
     CreateCategoryInput,
     CreateCategoryUserCase,
 )
+from src.core.category.application.errors import InvalidCategoryData
 from src.core.category.infra.in_memory_category_repository import (
     InMemoryCategoryRepository,
 )
@@ -28,3 +30,18 @@ class TestUseCaseCreateCategoryIntegration:
         assert saved_category.name == create_category_input.name
         assert saved_category.description == create_category_input.description
         assert saved_category.is_active == create_category_input.is_active
+
+    def test_use_case_create_category_with_invalid_data_error(self) -> None:
+        repository = InMemoryCategoryRepository()
+        create_category_use_case = CreateCategoryUserCase(repository=repository)
+
+        create_category_input = CreateCategoryInput(
+            name="",
+            description="Movie category",
+            is_active=True,
+        )
+
+        with pytest.raises(InvalidCategoryData, match="'name' must not be empty"):
+            create_category_use_case.execute(create_category_input)
+
+        assert len(repository.categories) == 0
