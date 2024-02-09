@@ -29,3 +29,6 @@ class InMemoryCategoryRepository(AbstractCategoryRepository):
     def delete(self, id: UUID) -> None:
         if id in self._categories:
             del self._categories[id]
+
+    def update(self, category: Category) -> Category:
+        return category
