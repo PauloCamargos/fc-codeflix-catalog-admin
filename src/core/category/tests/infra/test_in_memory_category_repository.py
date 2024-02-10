@@ -45,6 +45,41 @@ class TestGetByIdInMemoryCategoryRepository:
         assert movie_category == found_category
 
 
+class TestCanListCategoriesRepository:
+    def test_can_empty_list_category(self):
+
+        repository = InMemoryCategoryRepository(categories=[])
+
+        found_categories = repository.list_categories()
+
+        assert len(found_categories) == 0
+
+    def test_can_list_category(self):
+        movie_category = Category(
+            name="Movie",
+            description="Movie description",
+            is_active=True,
+        )
+        serie_category = Category(
+            name="Series",
+            description="Serie description",
+            is_active=True,
+        )
+
+        repository = InMemoryCategoryRepository(
+            categories=[
+                movie_category,
+                serie_category,
+            ]
+        )
+
+        found_categories = repository.list_categories()
+
+        assert len(found_categories) == 2
+        assert movie_category in found_categories
+        assert serie_category in found_categories
+
+
 class TestDeleteInMemoryCategoryRepository:
     def test_can_delete_category(self):
         movie_category = Category(
