@@ -9,8 +9,8 @@ class TestSaveInMemoryCategoryRepository:
         repository = InMemoryCategoryRepository()
 
         category = Category(
-            name="Dummy",
-            description="Dummy description",
+            name="Movie",
+            description="Movie description",
             is_active=True,
         )
 
@@ -68,3 +68,29 @@ class TestDeleteInMemoryCategoryRepository:
         repository.delete(id=movie_category.id)
 
         assert repository.categories == [serie_category]
+
+
+class TestUpdateInMemoryCategoryRepository:
+    def test_can_update_entity_category(self):
+        category = Category(
+            name="Movie",
+            description="Movie description",
+            is_active=True,
+        )
+
+        repository = InMemoryCategoryRepository(categories=[category])
+
+        updated_category_name = "Serie"
+        category.update_category(
+            name=updated_category_name,
+            description=category.description,
+        )
+        repository.update(category=category)
+
+        assert category in repository.categories
+        assert len(repository.categories) == 1
+        [updated_category] = repository.categories
+        assert updated_category.id == category.id
+        assert updated_category.name == updated_category_name
+        assert updated_category.description == category.description
+        assert updated_category.is_active == category.is_active
