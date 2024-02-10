@@ -1,4 +1,3 @@
-from typing import Optional
 from uuid import UUID
 from src.core.category.domain.category import Category
 from src.core.category.gateway.category_gateway import (
@@ -23,12 +22,17 @@ class InMemoryCategoryRepository(AbstractCategoryRepository):
     def save(self, category: Category) -> None:
         self._categories[category.id] = category
 
-    def get_by_id(self, id: UUID) -> Optional[Category]:
+    def get_by_id(self, id: UUID) -> Category | None:
         return self._categories.get(id)
+
+    def list_categories(self) -> list[Category]:
+        return list(self._categories.values())
 
     def delete(self, id: UUID) -> None:
         if id in self._categories:
             del self._categories[id]
 
-    def update(self, category: Category) -> Category:
-        return category
+    def update(self, category: Category) -> None:
+        old_category = self.get_by_id(id=category.id)
+        if old_category is not None:
+            self._categories[category.id] = category
