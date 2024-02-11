@@ -1,9 +1,9 @@
-from src.core.category.application.update_category import (
+from core.category.application.update_category import (
     UpdateCategory,
     UpdateCategoryInput,
 )
-from src.core.category.domain.category import Category
-from src.core.category.infra.in_memory_category_repository import (
+from core.category.domain.category import Category
+from core.category.infra.in_memory_category_repository import (
     InMemoryCategoryRepository,
 )
 

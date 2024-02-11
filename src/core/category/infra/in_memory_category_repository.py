@@ -1,7 +1,7 @@
 from uuid import UUID
 
-from src.core.category.domain.category import Category
-from src.core.category.gateway.category_gateway import AbstractCategoryRepository
+from core.category.domain.category import Category
+from core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
 class InMemoryCategoryRepository(AbstractCategoryRepository):
@@ -16,7 +16,7 @@ class InMemoryCategoryRepository(AbstractCategoryRepository):
 
     @property
     def categories(self) -> list[Category]:
-        return list(self._categories.values())
+        return self.list_categories()
 
     def save(self, category: Category) -> None:
         self._categories[category.id] = category
@@ -25,7 +25,15 @@ class InMemoryCategoryRepository(AbstractCategoryRepository):
         return self._categories.get(id)
 
     def list_categories(self) -> list[Category]:
-        return list(self._categories.values())
+        return [
+            Category(
+                id=category.id,
+                name=category.name,
+                description=category.description,
+                is_active=category.is_active,
+            )
+            for category in self._categories.values()
+        ]
 
     def delete(self, id: UUID) -> None:
         if id in self._categories:

@@ -3,7 +3,7 @@ import uuid
 
 import pytest
 
-from src.core.category.domain.category import (
+from core.category.domain.category import (
     Category,
     MAX_CATEGORY_NAME_NUM_CARACTERS,
     DEFAULT_CATEGORY_DESCRIPTION,

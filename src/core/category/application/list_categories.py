@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from uuid import UUID
-from src.core.category.gateway.category_gateway import AbstractCategoryRepository
+from core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
 @dataclass

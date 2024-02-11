@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
-from src.core.category.application.errors import CategoryNotFound
-from src.core.category.domain.category import Category
-from src.core.category.gateway.category_gateway import AbstractCategoryRepository
+from core.category.application.errors import CategoryNotFound
+from core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
 @dataclass
@@ -25,7 +24,7 @@ class UpdateCategory:
     def __init__(self, repository: AbstractCategoryRepository):
         self.repository = repository
 
-    def execute(self, input: UpdateCategoryInput) -> Category:
+    def execute(self, input: UpdateCategoryInput) -> UpdateCategoryOutput:
 
         category = self.repository.get_by_id(id=input.id)
 

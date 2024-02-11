@@ -2,14 +2,14 @@ from unittest.mock import MagicMock, call, create_autospec
 from uuid import uuid4
 
 import pytest
-from src.core.category.application.errors import CategoryNotFound
-from src.core.category.application.get_category import (
+from core.category.application.errors import CategoryNotFound
+from core.category.application.get_category import (
     GetCategoryInput,
     GetCategoryOutput,
     GetCategory,
 )
-from src.core.category.domain.category import Category
-from src.core.category.gateway.category_gateway import AbstractCategoryRepository
+from core.category.domain.category import Category
+from core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
 class TestGetCategoryIntegration:

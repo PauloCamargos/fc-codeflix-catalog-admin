@@ -1,11 +1,11 @@
 from unittest.mock import call, create_autospec
-from src.core.category.application.update_category import (
+from core.category.application.update_category import (
     UpdateCategory,
     UpdateCategoryInput,
 )
-from src.core.category.domain.category import Category
+from core.category.domain.category import Category
 
-from src.core.category.gateway.category_gateway import AbstractCategoryRepository
+from core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
 class TestUpdateCategory:
