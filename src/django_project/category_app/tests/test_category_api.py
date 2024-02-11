@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from rest_framework.test import APITestCase
 from rest_framework import status
 
@@ -6,7 +5,7 @@ from rest_framework import status
 class TestCactegoryAPI(APITestCase):
     def test_list_categories(self):
         url = "/api/categories/"
-        response: HttpResponse = self.client.get(url)
+        response = self.client.get(url)
 
         expected_data = [
             {

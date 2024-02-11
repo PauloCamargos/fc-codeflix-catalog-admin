@@ -1,12 +1,12 @@
 from uuid import UUID
 
 from django_project.category_app.models import Category as CategoryModel
-from src.core.category.domain.category import Category
-from src.core.category.gateway.category_gateway import AbstractCategoryRepository
+from core.category.domain.category import Category
+from core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
 class DjangoORMCategoryRepository(AbstractCategoryRepository):
-    def __init__(self, category_model: CategoryModel = CategoryModel):
+    def __init__(self, category_model: type[CategoryModel] = CategoryModel):
         self.category_model = category_model
 
     def save(self, category: Category) -> None:
@@ -33,7 +33,6 @@ class DjangoORMCategoryRepository(AbstractCategoryRepository):
         return category
 
     def list_categories(self) -> list[Category]:
-        found_categories = list(self.category_model.objects.all())
         categories = [
             Category(
                 id=found_category.id,
@@ -41,7 +40,7 @@ class DjangoORMCategoryRepository(AbstractCategoryRepository):
                 description=found_category.description,
                 is_active=found_category.is_active,
             )
-            for found_category in found_categories
+            for found_category in self.category_model.objects.all()
         ]
 
         return categories
