@@ -16,7 +16,7 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.analysis.autoSearchPaths": false,
+    "python.analysis.autoSearchPaths": true,
     "python.analysis.typeCheckingMode": "off",
     "python.analysis.autoFormatStrings": true,
     "python.analysis.inlayHints.functionReturnTypes": true,
