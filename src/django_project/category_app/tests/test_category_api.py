@@ -43,20 +43,22 @@ class TestListCategoryAPI:
         category_repository.save(category_movie)
         category_repository.save(category_serie)
 
-        expected_data = [
-            {
-                "id": str(category_movie.id),
-                "name": category_movie.name,
-                "description": category_movie.description,
-                "is_active": category_movie.is_active,
-            },
-            {
-                "id": str(category_serie.id),
-                "name": category_serie.name,
-                "description": category_serie.description,
-                "is_active": category_serie.is_active,
-            },
-        ]
+        expected_data = {
+            "data": [
+                {
+                    "id": str(category_movie.id),
+                    "name": category_movie.name,
+                    "description": category_movie.description,
+                    "is_active": category_movie.is_active,
+                },
+                {
+                    "id": str(category_serie.id),
+                    "name": category_serie.name,
+                    "description": category_serie.description,
+                    "is_active": category_serie.is_active,
+                },
+            ]
+        }
 
         url = "/api/categories/"
         response = APIClient().get(url)
@@ -83,10 +85,12 @@ class TestRetrieveAPI:
         category_repository.save(category_serie)
 
         expected_data = {
-            "id": str(category_movie.id),
-            "name": category_movie.name,
-            "description": category_movie.description,
-            "is_active": category_movie.is_active,
+            "data": {
+                "id": str(category_movie.id),
+                "name": category_movie.name,
+                "description": category_movie.description,
+                "is_active": category_movie.is_active,
+            }
         }
 
         url = f"/api/categories/{category_movie.id}/"
