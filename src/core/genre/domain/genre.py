@@ -29,7 +29,7 @@ class Genre:
         self.validate()
 
     def remove_category(self, id: UUID) -> None:
-        self.categories.pop(id)
+        self.categories.remove(id)
         self.validate()
 
     def validate(self) -> None:

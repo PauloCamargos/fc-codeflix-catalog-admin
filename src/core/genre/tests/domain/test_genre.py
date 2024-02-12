@@ -141,13 +141,28 @@ class TestGenreCategories:
 
         assert genre.categories == {category_id}
 
-    def test_category_to_genre(self):
+    def test_add_category_to_genre(self):
         category_id_1 = uuid.uuid4()
         genre = Genre(name="Romance", categories={category_id_1})
         category_id_2 = uuid.uuid4()
         genre.add_catetory(id=category_id_2)
 
         assert genre.categories == {category_id_1, category_id_2}
+
+    def test_remove_non_existing_category_from_genre(self):
+        category_id_1 = uuid.uuid4()
+        genre = Genre(name="Romance", categories={category_id_1})
+        category_id_2 = uuid.uuid4()
+        genre.remove_category(id=category_id_2)
+
+        assert genre.categories == {category_id_1}
+
+    def test_remove_existing_category_from_genre(self):
+        category_id_1 = uuid.uuid4()
+        genre = Genre(name="Romance", categories={category_id_1})
+        genre.remove_category(id=category_id_1)
+
+        assert genre.categories == {}
 
 
 class TestGenreEquality:

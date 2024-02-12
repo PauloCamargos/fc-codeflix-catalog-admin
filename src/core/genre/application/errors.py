@@ -1,6 +1,6 @@
-class InvalidGenreData(Exception):
+class RelatedCategoriesNotFound(Exception):
     pass
 
 
-class GenreNotFound(Exception):
+class InvalidGenreData(Exception):
     pass

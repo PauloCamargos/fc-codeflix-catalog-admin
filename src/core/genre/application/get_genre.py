@@ -1,36 +1,36 @@
-from dataclasses import dataclass
-from uuid import UUID
-from core.genre.application.errors import GenreNotFound
+# from dataclasses import dataclass
+# from uuid import UUID
+# from core.genre.application.errors import GenreNotFound
 
-from core.genre.gateway.genre_gateway import AbstractGenreRepository
-
-
-@dataclass
-class GetGenreInput:
-    id: UUID
+# from core.genre.gateway.genre_gateway import AbstractGenreRepository
 
 
-@dataclass
-class GetGenreOutput:
-    id: UUID
-    name: str
-    description: str
-    is_active: bool
+# @dataclass
+# class GetGenreInput:
+#     id: UUID
 
 
-class GetGenre:
-    def __init__(self, repository: AbstractGenreRepository) -> None:
-        self.repository: AbstractGenreRepository = repository
+# @dataclass
+# class GetGenreOutput:
+#     id: UUID
+#     name: str
+#     description: str
+#     is_active: bool
 
-    def execute(self, input: GetGenreInput) -> GetGenreOutput | None:
-        genre = self.repository.get_by_id(id=input.id)
 
-        if genre is None:
-            raise GenreNotFound()
+# class GetGenre:
+#     def __init__(self, repository: AbstractGenreRepository) -> None:
+#         self.repository: AbstractGenreRepository = repository
 
-        return GetGenreOutput(
-            id=genre.id,
-            name=genre.name,
-            description=genre.description,
-            is_active=genre.is_active,
-        )
+#     def execute(self, input: GetGenreInput) -> GetGenreOutput | None:
+#         genre = self.repository.get_by_id(id=input.id)
+
+#         if genre is None:
+#             raise GenreNotFound()
+
+#         return GetGenreOutput(
+#             id=genre.id,
+#             name=genre.name,
+#             description=genre.description,
+#             is_active=genre.is_active,
+#         )
