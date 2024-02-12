@@ -1,41 +1,40 @@
-# from dataclasses import dataclass
-# from uuid import UUID
-# from core.genre.gateway.genre_gateway import AbstractGenreRepository
+from dataclasses import dataclass
+from uuid import UUID
+from core.genre.gateway.genre_gateway import AbstractGenreRepository
 
 
-# @dataclass
-# class GenreOutput:
-#     id: UUID
-#     name: str
-#     description: str
-#     is_active: bool
+@dataclass
+class GenreOutput:
+    id: UUID
+    name: str
+    categories: set[UUID]
+    is_active: bool
 
 
-# @dataclass
-# class ListGenreInput:
-#     pass
+class ListGenres:
 
+    @dataclass
+    class Input:
+        pass
 
-# @dataclass
-# class ListGenreOutput:
-#     data: list[GenreOutput]
+    @dataclass
+    class Output:
+        data: list[GenreOutput]
 
+    def __init__(self, repository: AbstractGenreRepository):
+        self.repository = repository
 
-# class ListCategories:
-#     def __init__(self, repository: AbstractGenreRepository):
-#         self.repository = repository
+    def execute(self, input: Input) -> Output:
+        genres = self.repository.list_genres()
 
-#     def execute(self, input: ListGenreInput) -> ListGenreOutput:
-#         categories = self.repository.list_categories()
-
-#         return ListGenreOutput(
-#             data=[
-#                 GenreOutput(
-#                     id=genre.id,
-#                     name=genre.name,
-#                     description=genre.description,
-#                     is_active=genre.is_active,
-#                 )
-#                 for genre in categories
-#             ]
-#         )
+        return ListGenres.Output(
+            data=[
+                GenreOutput(
+                    id=genre.id,
+                    name=genre.name,
+                    is_active=genre.is_active,
+                    categories=genre.categories,
+                )
+                for genre in genres
+            ]
+        )

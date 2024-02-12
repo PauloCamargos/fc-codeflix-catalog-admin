@@ -1,12 +1,9 @@
-from uuid import UUID
 import uuid
+from uuid import UUID
 
 import pytest
 
-from core.genre.domain.genre import (
-    Genre,
-    MAX_GENRE_NAME_NUM_CARACTERS,
-)
+from core.genre.domain.genre import MAX_GENRE_NAME_NUM_CARACTERS, Genre
 
 
 class TestCreateGenre:
