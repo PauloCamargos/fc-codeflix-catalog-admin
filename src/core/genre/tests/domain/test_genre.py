@@ -127,14 +127,14 @@ class TestGenreCategories:
     def test_add_non_existing_category_to_genre(self):
         genre = Genre(name="Romance")
         category_id = uuid.uuid4()
-        genre.add_catetory(id=category_id)
+        genre.add_category(id=category_id)
 
         assert genre.categories == {category_id}
 
     def test_add_existing_category_to_genre(self):
         category_id = uuid.uuid4()
         genre = Genre(name="Romance", categories={category_id})
-        genre.add_catetory(id=category_id)
+        genre.add_category(id=category_id)
 
         assert genre.categories == {category_id}
 
@@ -142,7 +142,7 @@ class TestGenreCategories:
         category_id_1 = uuid.uuid4()
         genre = Genre(name="Romance", categories={category_id_1})
         category_id_2 = uuid.uuid4()
-        genre.add_catetory(id=category_id_2)
+        genre.add_category(id=category_id_2)
 
         assert genre.categories == {category_id_1, category_id_2}
 

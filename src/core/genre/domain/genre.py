@@ -24,7 +24,7 @@ class Genre:
         self.name = name
         self.validate()
 
-    def add_catetory(self, id: UUID) -> None:
+    def add_category(self, id: UUID) -> None:
         self.categories.add(id)
         self.validate()
 
