@@ -85,7 +85,7 @@ class TestUpdateGenre:
             genre.update_name(name=new_name)
 
     def test_update_genre_invalid_name_content_error(self):
-        genre = Genre(name="Romance", description="dummy description")
+        genre = Genre(name="Romance")
 
         new_name = ""
 
@@ -162,7 +162,7 @@ class TestGenreCategories:
         genre = Genre(name="Romance", categories={category_id_1})
         genre.remove_category(id=category_id_1)
 
-        assert genre.categories == {}
+        assert genre.categories == set()
 
 
 class TestGenreEquality:

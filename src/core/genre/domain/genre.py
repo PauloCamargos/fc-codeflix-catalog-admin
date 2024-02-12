@@ -29,6 +29,8 @@ class Genre:
         self.validate()
 
     def remove_category(self, id: UUID) -> None:
+        if id not in self.categories:
+            return
         self.categories.remove(id)
         self.validate()
 
