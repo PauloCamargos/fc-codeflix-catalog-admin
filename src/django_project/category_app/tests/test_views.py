@@ -244,3 +244,47 @@ class TestUpdateAPI:
         assert updated_category_movie.name == post_data["name"]
         assert updated_category_movie.description == post_data["description"]
         assert updated_category_movie.is_active == post_data["is_active"]
+
+
+@pytest.mark.django_db
+class TestDeleteCategory:
+    def test_delete_category_success(
+        self,
+        category_movie: Category,
+        category_repository: DjangoORMCategoryRepository,
+    ):
+        category_repository.save(category_movie)
+
+        url = f"/api/categories/{category_movie.id}/"
+
+        response = APIClient().delete(path=url)
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+        found_category = category_repository.get_by_id(id=category_movie.id)
+        assert found_category is None
+
+    def test_delete_category_non_existing_id_error(
+        self,
+        category_movie: Category,
+        category_repository: DjangoORMCategoryRepository,
+    ):
+        url = f"/api/categories/{category_movie.id}/"
+
+        response = APIClient().delete(path=url)
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_delete_category_non_invalid_id_error(
+        self,
+        category_movie: Category,
+        category_repository: DjangoORMCategoryRepository,
+    ):
+        url = "/api/categories/invalid-id/"
+
+        response = APIClient().delete(path=url)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == {
+            "id": ["Must be a valid UUID."],
+        }
