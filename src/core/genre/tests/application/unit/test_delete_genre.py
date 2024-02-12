@@ -42,11 +42,8 @@ def horror_genre(
 
 
 @pytest.fixture
-def mocked_genre_repository(
-    romance_genre: Genre,
-) -> MagicMock:
+def mocked_genre_repository() -> MagicMock:
     mocked_repository = create_autospec(InMemoryGenreRepository)
-    mocked_repository.get_by_id.return_value = romance_genre
     return mocked_repository
 
 
@@ -56,6 +53,7 @@ class TestDeleteGenre:
         romance_genre: Genre,
         mocked_genre_repository: MagicMock,
     ):
+        mocked_genre_repository.get_by_id.return_value = romance_genre
 
         input = DeleteGenre.Input(id=romance_genre.id)
         delete_genre = DeleteGenre(repository=mocked_genre_repository)
