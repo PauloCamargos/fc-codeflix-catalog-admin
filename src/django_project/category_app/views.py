@@ -114,6 +114,38 @@ class CategoryViewSet(viewsets.ViewSet):
             data=serialized_output.data,
         )
 
+    def partial_update(self, request: Request, pk=None) -> Response:
+        if isinstance(request.data, QueryDict):
+            data = request.data.dict()
+        elif isinstance(request.data, dict):
+            data = request.data
+        else:
+            data = request.data
+
+        serializer_input = UpdateCategoryRequestSerializer(
+            data={
+                **data,
+                "id": pk,
+            },
+            partial=True,
+        )
+        serializer_input.is_valid(raise_exception=True)
+
+        input = UpdateCategoryInput(**serializer_input.validated_data)
+        use_case = UpdateCategory(repository=DjangoORMCategoryRepository())
+
+        try:
+            output = use_case.execute(input=input)
+        except CategoryNotFound:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serialized_output = UpdateCategoryResponseSerializer(instance=output)
+
+        return Response(
+            status=status.HTTP_204_NO_CONTENT,
+            data=serialized_output.data,
+        )
+
     def delete(self, request: Request, pk=None) -> Response:
         serializer_input = DeleteCategoryRequestSerializer(data={"id": pk})
         serializer_input.is_valid(raise_exception=True)

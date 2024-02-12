@@ -247,6 +247,146 @@ class TestUpdateAPI:
 
 
 @pytest.mark.django_db
+class TestPartialUpdateAPI:
+    def test_partial_update_category_invalid_payload_error(
+        self,
+        category_movie: Category,
+        category_repository: DjangoORMCategoryRepository,
+    ):
+        category_repository.save(category=category_movie)
+
+        post_data = {
+            "name": "",
+        }
+
+        url = f"/api/categories/{str(category_movie.id)}/"
+        response = APIClient().patch(url, data=post_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == {
+            "name": ["This field may not be blank."],
+        }
+
+    def test_partial_update_category_invalid_id_error(
+        self,
+        category_movie: Category,
+        category_repository: DjangoORMCategoryRepository,
+    ):
+        category_repository.save(category=category_movie)
+
+        post_data = {
+            "name": category_movie.name,
+            "description": category_movie.description,
+            "is_active": not category_movie.is_active,
+        }
+
+        url = "/api/categories/invalid-id/"
+        response = APIClient().patch(url, data=post_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == {
+            "id": ["Must be a valid UUID."],
+        }
+
+    def test_partial_update_category_non_existing_category_error(
+        self,
+        category_movie: Category,
+    ):
+        post_data = {
+            "description": "Film description",
+        }
+
+        url = f"/api/categories/{str(uuid4())}/"
+        response = APIClient().patch(url, data=post_data)
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_partial_update_category_name_valid_payload_success(
+        self,
+        category_movie: Category,
+        category_repository: DjangoORMCategoryRepository,
+    ):
+        category_repository.save(category=category_movie)
+
+        post_data = {
+            "name": "Film"
+        }
+
+        url = f"/api/categories/{str(category_movie.id)}/"
+        response = APIClient().patch(url, data=post_data)
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+        assert response.data["id"] == str(category_movie.id)
+
+        updated_category_movie = category_repository.get_by_id(
+            id=UUID(response.data["id"])
+        )
+
+        assert updated_category_movie is not None
+
+        assert updated_category_movie.name == post_data["name"]
+        assert updated_category_movie.description == category_movie.description
+        assert updated_category_movie.is_active == category_movie.is_active
+
+    def test_partial_update_category_description_valid_payload_success(
+        self,
+        category_movie: Category,
+        category_repository: DjangoORMCategoryRepository,
+    ):
+        category_repository.save(category=category_movie)
+
+        post_data = {
+            "description": "Film description"
+        }
+
+        url = f"/api/categories/{str(category_movie.id)}/"
+        response = APIClient().patch(url, data=post_data)
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+        assert response.data["id"] == str(category_movie.id)
+
+        updated_category_movie = category_repository.get_by_id(
+            id=UUID(response.data["id"])
+        )
+
+        assert updated_category_movie is not None
+
+        assert updated_category_movie.name == category_movie.name
+        assert updated_category_movie.description == post_data["description"]
+        assert updated_category_movie.is_active == category_movie.is_active
+
+    def test_partial_update_category_is_active_valid_payload_success(
+        self,
+        category_movie: Category,
+        category_repository: DjangoORMCategoryRepository,
+    ):
+        category_repository.save(category=category_movie)
+
+        post_data = {
+            "is_active": not category_movie.is_active,
+        }
+
+        url = f"/api/categories/{str(category_movie.id)}/"
+        response = APIClient().patch(url, data=post_data)
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+        assert response.data["id"] == str(category_movie.id)
+
+        updated_category_movie = category_repository.get_by_id(
+            id=UUID(response.data["id"])
+        )
+
+        assert updated_category_movie is not None
+
+        assert updated_category_movie.name == category_movie.name
+        assert updated_category_movie.description == category_movie.description
+        assert updated_category_movie.is_active == post_data["is_active"]
+
+
+@pytest.mark.django_db
 class TestDeleteCategory:
     def test_delete_category_success(
         self,
