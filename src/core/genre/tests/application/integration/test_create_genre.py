@@ -1,12 +1,12 @@
 from uuid import UUID, uuid4
 
 import pytest
+from core.category.domain.category import Category
 
 from core.category.infra.in_memory_category_repository import InMemoryCategoryRepository
 from core.genre.application.create_genre import CreateGenre
 from core.genre.application.errors import RelatedCategoriesNotFound
 from core.genre.infra.in_memory_genre_repository import InMemoryGenreRepository
-from django_project.category_app.models import Category
 
 
 @pytest.fixture
