@@ -1,4 +1,4 @@
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 from rest_framework import status
@@ -105,3 +105,51 @@ class TestRetrieveAPI:
         response = APIClient().get(url)
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.django_db
+class TestCreateAPI:
+    def test_create_category_invalid_payload_error(
+        self,
+        category_movie: Category,
+        category_repository: DjangoORMCategoryRepository,
+    ):
+        url = "/api/categories/"
+        response = APIClient().post(
+            path=url,
+            data={
+                "name": "",
+                "description": "Some description",
+            },
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_category_valid_payload_success(
+        self,
+        category_movie: Category,
+        category_serie: Category,
+        category_repository: DjangoORMCategoryRepository,
+    ):
+
+        post_data = {
+            "name": category_movie.name,
+            "description": category_movie.description,
+            "is_active": category_movie.is_active,
+        }
+
+        url = "/api/categories/"
+        response = APIClient().post(path=url, data=post_data)
+
+        assert response.status_code == status.HTTP_201_CREATED
+
+        created_category_id = response.data["id"]
+        created_category = category_repository.get_by_id(
+            id=UUID(created_category_id)
+        )
+
+        assert created_category is not None
+
+        assert created_category.name == post_data["name"]
+        assert created_category.description == post_data["description"]
+        assert created_category.is_active == post_data["is_active"]

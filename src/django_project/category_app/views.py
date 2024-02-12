@@ -2,11 +2,17 @@ from rest_framework import status, viewsets
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from core.category.application.errors import CategoryNotFound
+from core.category.application.create_category import (
+    CreateCategory,
+    CreateCategoryInput,
+)
+from core.category.application.errors import CategoryNotFound, InvalidCategoryData
 from core.category.application.get_category import GetCategory, GetCategoryInput
 from core.category.application.list_categories import ListCategories, ListCategoryInput
 from django_project.category_app.repository import DjangoORMCategoryRepository
 from django_project.category_app.serializers import (
+    CreateCategoryRequestSerializer,
+    CreateCategoryResponseSerializer,
     ListCategoryResponseSerializers,
     RetrieveCategoryRequestSerializer,
     RetrieveCategoryResponseSerializer,
@@ -39,9 +45,28 @@ class CategoryViewSet(viewsets.ViewSet):
         except CategoryNotFound:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serialized_category = RetrieveCategoryResponseSerializer(instance=output)
+        serialized_output = RetrieveCategoryResponseSerializer(instance=output)
 
         return Response(
             status=status.HTTP_200_OK,
-            data=serialized_category.data,
+            data=serialized_output.data,
+        )
+
+    def create(self, request: Request) -> Response:
+        serializer_input = CreateCategoryRequestSerializer(data=request.data)
+        serializer_input.is_valid(raise_exception=True)
+
+        input = CreateCategoryInput(**serializer_input.validated_data)
+        use_case = CreateCategory(repository=DjangoORMCategoryRepository())
+
+        try:
+            output = use_case.execute(input=input)
+        except InvalidCategoryData:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        serialized_output = CreateCategoryResponseSerializer(instance=output)
+
+        return Response(
+            status=status.HTTP_201_CREATED,
+            data=serialized_output.data,
         )
