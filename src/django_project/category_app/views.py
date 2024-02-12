@@ -1,3 +1,4 @@
+from django.http import QueryDict
 from rest_framework import status, viewsets
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -9,6 +10,10 @@ from core.category.application.create_category import (
 from core.category.application.errors import CategoryNotFound, InvalidCategoryData
 from core.category.application.get_category import GetCategory, GetCategoryInput
 from core.category.application.list_categories import ListCategories, ListCategoryInput
+from core.category.application.update_category import (
+    UpdateCategory,
+    UpdateCategoryInput,
+)
 from django_project.category_app.repository import DjangoORMCategoryRepository
 from django_project.category_app.serializers import (
     CreateCategoryRequestSerializer,
@@ -16,6 +21,8 @@ from django_project.category_app.serializers import (
     ListCategoryResponseSerializers,
     RetrieveCategoryRequestSerializer,
     RetrieveCategoryResponseSerializer,
+    UpdateCategoryRequestSerializer,
+    UpdateCategoryResponseSerializer,
 )
 
 
@@ -68,5 +75,36 @@ class CategoryViewSet(viewsets.ViewSet):
 
         return Response(
             status=status.HTTP_201_CREATED,
+            data=serialized_output.data,
+        )
+
+    def update(self, request: Request, pk=None) -> Response:
+        if isinstance(request.data, QueryDict):
+            data = request.data.dict()
+        elif isinstance(request.data, dict):
+            data = request.data
+        else:
+            data = request.data
+
+        serializer_input = UpdateCategoryRequestSerializer(
+            data={
+                **data,
+                "id": pk,
+            },
+        )
+        serializer_input.is_valid(raise_exception=True)
+
+        input = UpdateCategoryInput(**serializer_input.validated_data)
+        use_case = UpdateCategory(repository=DjangoORMCategoryRepository())
+
+        try:
+            output = use_case.execute(input=input)
+        except CategoryNotFound:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serialized_output = UpdateCategoryResponseSerializer(instance=output)
+
+        return Response(
+            status=status.HTTP_202_ACCEPTED,
             data=serialized_output.data,
         )
