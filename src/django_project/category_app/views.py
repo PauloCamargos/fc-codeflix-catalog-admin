@@ -105,6 +105,6 @@ class CategoryViewSet(viewsets.ViewSet):
         serialized_output = UpdateCategoryResponseSerializer(instance=output)
 
         return Response(
-            status=status.HTTP_202_ACCEPTED,
+            status=status.HTTP_204_NO_CONTENT,
             data=serialized_output.data,
         )

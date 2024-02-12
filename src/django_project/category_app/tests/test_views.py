@@ -203,10 +203,7 @@ class TestUpdateAPI:
     def test_update_category_non_existing_category_error(
         self,
         category_movie: Category,
-        category_repository: DjangoORMCategoryRepository,
     ):
-        category_repository.save(category=category_movie)
-
         post_data = {
             "name": category_movie.name,
             "description": category_movie.description,
@@ -234,7 +231,7 @@ class TestUpdateAPI:
         url = f"/api/categories/{str(category_movie.id)}/"
         response = APIClient().put(url, data=post_data)
 
-        assert response.status_code == status.HTTP_202_ACCEPTED
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
         assert response.data["id"] == str(category_movie.id)
 
