@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
-from core.category.application.errors import CategoryNotFound
+
+from core.category.application.errors import CategoryNotFound, InvalidCategoryData
 from core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
@@ -40,13 +41,22 @@ class UpdateCategory:
         if input.description is not None:
             description = input.description
 
-        category.update_category(name=name, description=description)
+        try:
+            category.update_category(name=name, description=description)
+        except ValueError as err:
+            raise InvalidCategoryData(err)
 
         if input.is_active is not None:
             if not category.is_active:
-                category.activate()
+                try:
+                    category.activate()
+                except ValueError as err:
+                    raise InvalidCategoryData(err)
             else:
-                category.deactivate()
+                try:
+                    category.deactivate()
+                except ValueError as err:
+                    raise InvalidCategoryData(err)
 
         self.repository.update(category=category)
 
