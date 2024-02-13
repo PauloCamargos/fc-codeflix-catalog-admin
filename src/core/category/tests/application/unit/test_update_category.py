@@ -2,13 +2,13 @@ from unittest.mock import call, create_autospec
 
 import pytest
 
-from core.category.application.errors import InvalidCategoryData
-from core.category.application.update_category import (
+from src.core.category.application.errors import InvalidCategoryData
+from src.core.category.application.update_category import (
     UpdateCategory,
     UpdateCategoryInput,
 )
-from core.category.domain.category import Category
-from core.category.gateway.category_gateway import AbstractCategoryRepository
+from src.core.category.domain.category import Category
+from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
 class TestUpdateCategory:

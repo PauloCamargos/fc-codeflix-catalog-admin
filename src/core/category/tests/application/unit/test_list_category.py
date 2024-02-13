@@ -1,10 +1,10 @@
 from unittest.mock import call, create_autospec
-from core.category.application.list_categories import (
+from src.core.category.application.list_categories import (
     ListCategories,
     ListCategoryInput,
 )
-from core.category.domain.category import Category
-from core.category.gateway.category_gateway import AbstractCategoryRepository
+from src.core.category.domain.category import Category
+from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
 class TestListCategoryIntegration:

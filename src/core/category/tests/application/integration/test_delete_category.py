@@ -1,13 +1,13 @@
 from uuid import uuid4
 
 import pytest
-from core.category.application.delete_category import (
+from src.core.category.application.delete_category import (
     DeleteCategory,
     DeleteCategoryInput,
 )
-from core.category.application.errors import CategoryNotFound
-from core.category.domain.category import Category
-from core.category.infra.in_memory_category_repository import (
+from src.core.category.application.errors import CategoryNotFound
+from src.core.category.domain.category import Category
+from src.core.category.infra.in_memory_category_repository import (
     InMemoryCategoryRepository,
 )
 

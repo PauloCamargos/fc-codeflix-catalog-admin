@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 
-from core.genre.domain.genre import Genre
+from src.core.genre.domain.genre import Genre
 
 
 class AbstractGenreRepository(ABC):

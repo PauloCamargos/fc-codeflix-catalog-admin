@@ -3,23 +3,26 @@ from rest_framework import status, viewsets
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from core.category.application.create_category import (
+from src.core.category.application.create_category import (
     CreateCategory,
     CreateCategoryInput,
 )
-from core.category.application.delete_category import (
+from src.core.category.application.delete_category import (
     DeleteCategory,
     DeleteCategoryInput,
 )
-from core.category.application.errors import CategoryNotFound, InvalidCategoryData
-from core.category.application.get_category import GetCategory, GetCategoryInput
-from core.category.application.list_categories import ListCategories, ListCategoryInput
-from core.category.application.update_category import (
+from src.core.category.application.errors import CategoryNotFound, InvalidCategoryData
+from src.core.category.application.get_category import GetCategory, GetCategoryInput
+from src.core.category.application.list_categories import (
+    ListCategories,
+    ListCategoryInput,
+)
+from src.core.category.application.update_category import (
     UpdateCategory,
     UpdateCategoryInput,
 )
-from django_project.category_app.repository import DjangoORMCategoryRepository
-from django_project.category_app.serializers import (
+from src.django_project.category_app.repository import DjangoORMCategoryRepository
+from src.django_project.category_app.serializers import (
     CreateCategoryRequestSerializer,
     CreateCategoryResponseSerializer,
     DeleteCategoryRequestSerializer,

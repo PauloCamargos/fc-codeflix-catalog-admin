@@ -1,8 +1,8 @@
 # from dataclasses import dataclass
 # from uuid import UUID
-# from core.genre.application.errors import GenreNotFound
+# from src.core.genre.application.errors import GenreNotFound
 
-# from core.genre.gateway.genre_gateway import AbstractGenreRepository
+# from src.core.genre.gateway.genre_gateway import AbstractGenreRepository
 
 
 # @dataclass

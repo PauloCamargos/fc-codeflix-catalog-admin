@@ -2,13 +2,13 @@ from unittest.mock import call, create_autospec
 from uuid import uuid4
 
 import pytest
-from core.category.application.delete_category import (
+from src.core.category.application.delete_category import (
     DeleteCategory,
     DeleteCategoryInput,
 )
-from core.category.application.errors import CategoryNotFound
-from core.category.domain.category import Category
-from core.category.gateway.category_gateway import AbstractCategoryRepository
+from src.core.category.application.errors import CategoryNotFound
+from src.core.category.domain.category import Category
+from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
 class TestDeleteCategory:

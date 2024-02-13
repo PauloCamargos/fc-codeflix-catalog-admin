@@ -2,11 +2,11 @@ from unittest.mock import MagicMock, create_autospec
 from uuid import uuid4
 import pytest
 
-from core.category.domain.category import Category
-from core.genre.application.delete_genre import DeleteGenre
-from core.genre.application.errors import GenreNotFound
-from core.genre.domain.genre import Genre
-from core.genre.infra.in_memory_genre_repository import InMemoryGenreRepository
+from src.core.category.domain.category import Category
+from src.core.genre.application.delete_genre import DeleteGenre
+from src.core.genre.application.errors import GenreNotFound
+from src.core.genre.domain.genre import Genre
+from src.core.genre.infra.in_memory_genre_repository import InMemoryGenreRepository
 
 
 @pytest.fixture

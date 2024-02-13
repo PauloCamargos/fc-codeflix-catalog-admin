@@ -1,10 +1,10 @@
 import pytest
-from core.category.application.create_category import (
+from src.core.category.application.create_category import (
     CreateCategoryInput,
     CreateCategory,
 )
-from core.category.application.errors import InvalidCategoryData
-from core.category.infra.in_memory_category_repository import (
+from src.core.category.application.errors import InvalidCategoryData
+from src.core.category.infra.in_memory_category_repository import (
     InMemoryCategoryRepository,
 )
 

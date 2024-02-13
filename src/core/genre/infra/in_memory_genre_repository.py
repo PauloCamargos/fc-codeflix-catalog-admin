@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from core.genre.gateway.genre_gateway import AbstractGenreRepository
+from src.core.genre.gateway.genre_gateway import AbstractGenreRepository
 from src.core.genre.domain.genre import Genre
 
 

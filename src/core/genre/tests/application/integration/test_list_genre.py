@@ -1,10 +1,12 @@
 import pytest
 
-from core.category.domain.category import Category
-from core.category.infra.in_memory_category_repository import InMemoryCategoryRepository
-from core.genre.application.list_genres import ListGenres
-from core.genre.domain.genre import Genre
-from core.genre.infra.in_memory_genre_repository import InMemoryGenreRepository
+from src.core.category.domain.category import Category
+from src.core.category.infra.in_memory_category_repository import (
+    InMemoryCategoryRepository,
+)
+from src.core.genre.application.list_genres import ListGenres
+from src.core.genre.domain.genre import Genre
+from src.core.genre.infra.in_memory_genre_repository import InMemoryGenreRepository
 
 
 @pytest.fixture

@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from core.category.gateway.category_gateway import AbstractCategoryRepository
-from core.genre.application.errors import (
+from src.core.category.gateway.category_gateway import AbstractCategoryRepository
+from src.core.genre.application.errors import (
     GenreNotFound,
     InvalidGenreData,
     RelatedCategoriesNotFound,
 )
-from core.genre.gateway.genre_gateway import AbstractGenreRepository
+from src.core.genre.gateway.genre_gateway import AbstractGenreRepository
 
 
 class UpdateGenre:

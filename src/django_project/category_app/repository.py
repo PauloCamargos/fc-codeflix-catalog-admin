@@ -1,8 +1,8 @@
 from uuid import UUID
 
-from django_project.category_app.models import Category as CategoryModel
-from core.category.domain.category import Category
-from core.category.gateway.category_gateway import AbstractCategoryRepository
+from src.django_project.category_app.models import Category as CategoryModel
+from src.core.category.domain.category import Category
+from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
 class DjangoORMCategoryRepository(AbstractCategoryRepository):

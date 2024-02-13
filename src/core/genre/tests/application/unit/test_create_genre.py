@@ -3,12 +3,15 @@ from unittest.mock import create_autospec
 
 import pytest
 
-from core.category.domain.category import Category
-from core.category.gateway.category_gateway import AbstractCategoryRepository
-from core.genre.application.create_genre import CreateGenre
-from core.genre.application.errors import InvalidGenreData, RelatedCategoriesNotFound
-from core.genre.domain.genre import Genre
-from core.genre.gateway.genre_gateway import AbstractGenreRepository
+from src.core.category.domain.category import Category
+from src.core.category.gateway.category_gateway import AbstractCategoryRepository
+from src.core.genre.application.create_genre import CreateGenre
+from src.core.genre.application.errors import (
+    InvalidGenreData,
+    RelatedCategoriesNotFound,
+)
+from src.core.genre.domain.genre import Genre
+from src.core.genre.gateway.genre_gateway import AbstractGenreRepository
 
 
 @pytest.fixture

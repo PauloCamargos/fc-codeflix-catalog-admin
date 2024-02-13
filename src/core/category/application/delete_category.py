@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
-from core.category.application.errors import CategoryNotFound
-from core.category.gateway.category_gateway import AbstractCategoryRepository
+from src.core.category.application.errors import CategoryNotFound
+from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
 @dataclass

@@ -1,12 +1,12 @@
 from unittest.mock import MagicMock, call
 import pytest
-from core.category.application.create_category import (
+from src.core.category.application.create_category import (
     CreateCategoryInput,
     CreateCategory,
 )
-from core.category.application.errors import InvalidCategoryData
-from core.category.domain.category import Category
-from core.category.gateway.category_gateway import AbstractCategoryRepository
+from src.core.category.application.errors import InvalidCategoryData
+from src.core.category.domain.category import Category
+from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
 class TestCreateCategory:

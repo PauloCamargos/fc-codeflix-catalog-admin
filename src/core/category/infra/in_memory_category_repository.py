@@ -1,7 +1,7 @@
 from uuid import UUID
 
-from core.category.domain.category import Category
-from core.category.gateway.category_gateway import AbstractCategoryRepository
+from src.core.category.domain.category import Category
+from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 
 
 class InMemoryCategoryRepository(AbstractCategoryRepository):
