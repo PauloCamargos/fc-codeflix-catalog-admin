@@ -89,6 +89,11 @@ class GenreViewSet(viewsets.ViewSet):
             output = use_case.execute(input=input)
         except GenreNotFound:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        except (InvalidGenreData, RelatedCategoriesNotFound) as exc:
+            return Response(
+                status=status.HTTP_400_BAD_REQUEST,
+                data={"error": str(exc)},
+            )
 
         serialized_output = UpdateGenreResponseSerializer(instance=output)
 
@@ -124,6 +129,11 @@ class GenreViewSet(viewsets.ViewSet):
             output = use_case.execute(input=input)
         except GenreNotFound:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        except (InvalidGenreData, RelatedCategoriesNotFound) as exc:
+            return Response(
+                status=status.HTTP_400_BAD_REQUEST,
+                data={"error": str(exc)},
+            )
 
         serialized_output = UpdateGenreResponseSerializer(instance=output)
 

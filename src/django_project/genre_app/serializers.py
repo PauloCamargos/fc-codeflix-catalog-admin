@@ -39,7 +39,7 @@ class UpdateGenreRequestSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     name = serializers.CharField(max_length=255)
     is_active = serializers.BooleanField()
-    categories = SetField(child=serializers.UUIDField(), default=set())
+    categories = SetField(child=serializers.UUIDField())
 
 
 class UpdateGenreResponseSerializer(serializers.Serializer):

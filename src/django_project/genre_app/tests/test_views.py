@@ -68,20 +68,20 @@ def persisted_drama_genre_without_categories(
 class TestListAPI:
     def test_list_genres_and_categories_success(
         self,
-        genre_repository: Genre,
+        presisted_romance_genre_with_categories: Genre,
         persisted_drama_genre_without_categories: Genre,
     ):
 
         expected_data = {
             "data": [
                 {
-                    "id": str(genre_repository.id),
-                    "name": genre_repository.name,
-                    "is_active": genre_repository.is_active,
+                    "id": str(presisted_romance_genre_with_categories.id),
+                    "name": presisted_romance_genre_with_categories.name,
+                    "is_active": presisted_romance_genre_with_categories.is_active,
                     "categories": [
                         str(category_id)
                         for category_id in (
-                            genre_repository.categories
+                            presisted_romance_genre_with_categories.categories
                         )
                     ],
                 },
@@ -206,6 +206,111 @@ class TestCreateAPI:
         assert response.data == {
             "error": f"Categories not found: {inexisting_category_ids}"
         }
+
+
+@pytest.mark.django_db
+class TestUpdateAPI:
+    def test_update_genre_invalid_payload_error(
+        self,
+        persisted_drama_genre_without_categories: Genre,
+    ):
+
+        post_data = {
+            "name": "",
+        }
+
+        url = BASE_GENRE_URL + f"{str(persisted_drama_genre_without_categories.id)}/"
+        response = APIClient().put(url, data=post_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == {
+            "name": ["This field may not be blank."],
+            "is_active": ["This field is required."],
+            "categories": ["This field is required."],
+        }
+
+    def test_update_category_invalid_id_error(
+        self,
+        persisted_drama_genre_without_categories: Genre,
+    ):
+
+        post_data = {
+            "name": persisted_drama_genre_without_categories.name,
+            "is_active": not persisted_drama_genre_without_categories.is_active,
+        }
+
+        url = BASE_GENRE_URL + "invalid-id/"
+        response = APIClient().put(url, data=post_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == {
+            "id": ["Must be a valid UUID."],
+            "categories": ["This field is required."]
+        }
+
+    def test_update_non_existing_genre_error(
+        self,
+    ):
+        post_data = {
+            "name": "foo",
+            "is_active": False,
+            "categories": [],
+        }
+
+        url = BASE_GENRE_URL + f"/{str(uuid4())}/"
+        response = APIClient().put(url, data=post_data)
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_update_genre_non_existing_categories_error(
+        self,
+        persisted_drama_genre_without_categories: Genre,
+    ):
+        inexisting_category_ids = {uuid4()}
+        post_data = {
+            "name": persisted_drama_genre_without_categories.name,
+            "is_active": persisted_drama_genre_without_categories.is_active,
+            "categories": [str(id) for id in inexisting_category_ids],
+        }
+
+        url = BASE_GENRE_URL + f"{str(persisted_drama_genre_without_categories.id)}/"
+        response = APIClient().put(url, data=post_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == {
+            "error": f"Categories not found: {inexisting_category_ids}"
+        }
+
+    def test_update_genre_valid_payload_success(
+        self,
+        persisted_drama_genre_without_categories: Genre,
+        genre_repository: DjangoORMGenreRepository,
+        category_repository: DjangoORMCategoryRepository,
+    ):
+        serie_category = Category(name="Serie")
+        category_repository.save(category=serie_category)
+
+        post_data = {
+            "name": "New Drama",
+            "is_active": not persisted_drama_genre_without_categories.is_active,
+            "categories": [str(serie_category.id)]
+        }
+
+        url = BASE_GENRE_URL + f"{str(persisted_drama_genre_without_categories.id)}/"
+        response = APIClient().put(url, data=post_data)
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert response.data["id"] == str(persisted_drama_genre_without_categories.id)
+
+        updated_genre = genre_repository.get_by_id(
+            id=UUID(response.data["id"])
+        )
+
+        assert updated_genre is not None
+
+        assert updated_genre.name == post_data["name"]
+        assert updated_genre.is_active == post_data["is_active"]
+        assert updated_genre.categories == {serie_category.id}
 
 
 @pytest.mark.django_db
