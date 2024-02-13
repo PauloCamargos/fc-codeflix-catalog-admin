@@ -5,6 +5,7 @@ from django.db import models
 
 class Category(models.Model):
     class Meta:
+        app_label = "category_app"
         db_table = "category"
         verbose_name_plural = "categories"
 
