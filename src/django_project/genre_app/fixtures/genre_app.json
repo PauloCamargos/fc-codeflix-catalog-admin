@@ -1,0 +1,1 @@
+[{"model": "genre_app.genre", "pk": "8dd6eb30-edc6-4411-900e-720332bba5b9", "fields": {"name": "Romance", "is_active": true, "categories": ["b5069bf9-ad35-4d33-9c2e-c81cd828fce7", "e63ada7d-eb1d-4d76-be1e-86ce47bbd24d"]}}]
