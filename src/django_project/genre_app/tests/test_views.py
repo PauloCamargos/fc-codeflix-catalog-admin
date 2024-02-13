@@ -68,20 +68,20 @@ def persisted_drama_genre_without_categories(
 class TestListAPI:
     def test_list_genres_and_categories_success(
         self,
-        presisted_romance_genre_with_categories: Genre,
+        genre_repository: Genre,
         persisted_drama_genre_without_categories: Genre,
     ):
 
         expected_data = {
             "data": [
                 {
-                    "id": str(presisted_romance_genre_with_categories.id),
-                    "name": presisted_romance_genre_with_categories.name,
-                    "is_active": presisted_romance_genre_with_categories.is_active,
+                    "id": str(genre_repository.id),
+                    "name": genre_repository.name,
+                    "is_active": genre_repository.is_active,
                     "categories": [
                         str(category_id)
                         for category_id in (
-                            presisted_romance_genre_with_categories.categories
+                            genre_repository.categories
                         )
                     ],
                 },
@@ -145,7 +145,6 @@ class TestCreateAPI:
 
     def test_create_genre_without_categories_success(
         self,
-        category_repository: DjangoORMCategoryRepository,
         genre_repository: DjangoORMGenreRepository,
     ):
 
@@ -206,4 +205,43 @@ class TestCreateAPI:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.data == {
             "error": f"Categories not found: {inexisting_category_ids}"
+        }
+
+
+@pytest.mark.django_db
+class TestDeleteGenre:
+    def test_delete_genre_success(
+        self,
+        presisted_romance_genre_with_categories: Genre,
+        genre_repository: DjangoORMGenreRepository,
+    ):
+        url = BASE_GENRE_URL + f"{str(presisted_romance_genre_with_categories.id)}/"
+        response = APIClient().delete(path=url)
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+        found_genre = genre_repository.get_by_id(
+            id=presisted_romance_genre_with_categories.id
+        )
+        assert found_genre is None
+
+    def test_delete_genre_non_existing_id_error(
+        self,
+    ):
+        url = f"/api/categories/{str(uuid4())}/"
+
+        response = APIClient().delete(path=url)
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_delete_genre_non_invalid_id_error(
+        self,
+    ):
+        url = "/api/categories/invalid-id/"
+
+        response = APIClient().delete(path=url)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == {
+            "id": ["Must be a valid UUID."],
         }
