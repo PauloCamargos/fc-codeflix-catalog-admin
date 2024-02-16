@@ -35,8 +35,8 @@ class TestListCastMember:
 
         output = use_case.execute(input=input)
 
-        assert len(output) == 1
-        [found_cast_member_output] = output
+        assert len(output.data) == 1
+        [found_cast_member_output] = output.data
         assert found_cast_member_output.id == actor_cast_member.id
         assert found_cast_member_output.name == actor_cast_member.name
         assert found_cast_member_output.type == actor_cast_member.type

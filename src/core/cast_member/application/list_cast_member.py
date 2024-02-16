@@ -6,6 +6,13 @@ from src.core.cast_member.gateway.cast_member_gateway import (
 )
 
 
+@dataclass
+class CastMemberOutput:
+    id: UUID
+    name: str
+    type: str
+
+
 class ListCastMember:
     @dataclass
     class Input:
@@ -13,9 +20,7 @@ class ListCastMember:
 
     @dataclass
     class Output:
-        id: UUID
-        name: str
-        type: str
+        data: list[CastMemberOutput]
 
     def __init__(self, repository: AbstractCastMemberRepository):
         self.repository = repository
@@ -23,11 +28,13 @@ class ListCastMember:
     def execute(self, input: Input) -> list[Output]:
         cast_members = self.repository.list()
 
-        return [
-            ListCastMember.Output(
-                id=cast_member.id,
-                name=cast_member.name,
-                type=cast_member.type,
-            )
-            for cast_member in cast_members
-        ]
+        return ListCastMember.Output(
+            data=[
+                CastMemberOutput(
+                    id=cast_member.id,
+                    name=cast_member.name,
+                    type=cast_member.type,
+                )
+                for cast_member in cast_members
+            ]
+        )

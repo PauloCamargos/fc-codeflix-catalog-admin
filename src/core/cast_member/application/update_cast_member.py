@@ -18,6 +18,12 @@ class UpdateCastMember:
         name: str | None = None
         type: str | None = None
 
+    @dataclass
+    class Output:
+        id: UUID
+        name: str
+        type: str
+
     def __init__(self, repository: AbstractCastMemberRepository):
         self.repository = repository
 
@@ -40,3 +46,9 @@ class UpdateCastMember:
             raise InvalidCastMemberData(exc)
 
         self.repository.update(cast_member=cast_member)
+
+        return UpdateCastMember.Output(
+            id=cast_member.id,
+            name=cast_member.name,
+            type=cast_member.type,
+        )
