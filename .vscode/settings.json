@@ -28,6 +28,7 @@
     ],
     "conventionalCommits.scopes": [
         "application",
-        "domain"
+        "domain",
+        "infra"
     ],
 }
