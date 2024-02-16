@@ -10,8 +10,8 @@ from src.core.cast_member.application.errors import (
 )
 from src.core.cast_member.application.list_cast_member import ListCastMember
 from src.core.cast_member.application.update_cast_member import UpdateCastMember
-from src.django_project.cast_member.repository import DjangoORMCastMemberRepository
-from src.django_project.cast_member.serializers import (
+from src.django_project.cast_member_app.repository import DjangoORMCastMemberRepository
+from src.django_project.cast_member_app.serializers import (
     CreateCastMemberRequestSerializer,
     CreateCastMemberResponseSerializer,
     DeleteCastMemberRequestSerializer,

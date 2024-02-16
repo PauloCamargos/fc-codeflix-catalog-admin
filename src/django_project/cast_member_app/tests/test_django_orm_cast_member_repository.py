@@ -3,7 +3,7 @@ from uuid import uuid4
 import pytest
 
 from src.core.cast_member.domain.cast_member import CastMember
-from src.django_project.cast_member.repository import DjangoORMCastMemberRepository
+from src.django_project.cast_member_app.repository import DjangoORMCastMemberRepository
 
 
 @pytest.fixture

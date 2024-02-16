@@ -9,7 +9,7 @@ from src.core.cast_member.domain.cast_member import CastMember
 from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
 )
-from src.django_project.cast_member.repository import DjangoORMCastMemberRepository
+from src.django_project.cast_member_app.repository import DjangoORMCastMemberRepository
 
 BASE_CAST_MEMBERS_URL = "/api/cast_members/"
 
@@ -131,6 +131,8 @@ class TestCreateAPI:
         created_cast_member = cast_member_repository.get_by_id(
             id=created_cast_member_id,
         )
+
+        assert created_cast_member is not None
 
         assert created_cast_member.name == post_data["name"]
         assert created_cast_member.type == post_data["type"]
