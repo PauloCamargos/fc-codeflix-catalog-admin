@@ -11,7 +11,7 @@ class ListCastMember:
     class Input:
         pass
 
-    @dataclass 
+    @dataclass
     class Output:
         id: UUID
         name: str
