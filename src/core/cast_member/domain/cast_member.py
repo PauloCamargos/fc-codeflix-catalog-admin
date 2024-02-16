@@ -20,11 +20,8 @@ class CastMember:
         self.name = name
         self.validate()
 
-    def update_type(self, type: str | CastMemberType) -> None:
-        if isinstance(type, str):
-            self.type = CastMemberType(type)
-        else:
-            self.type = type
+    def update_type(self, type: str) -> None:
+        self.type = CastMemberType(type)
         self.validate()
 
     def validate(self) -> None:
@@ -37,7 +34,8 @@ class CastMember:
         if self.name == "":
             raise ValueError("'name' must not be empty")
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
+        self.type = CastMemberType(self.type)
         self.validate()
 
     def __str__(self) -> str:
