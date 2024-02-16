@@ -10,6 +10,10 @@ class AbstractCastMemberRepository(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    def get_by_id(self, id: UUID) -> CastMember | None:
+        raise NotImplementedError()
+
+    @abstractmethod
     def list(self) -> list[CastMember]:
         raise NotImplementedError()
 
