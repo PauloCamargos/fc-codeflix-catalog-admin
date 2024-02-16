@@ -27,6 +27,7 @@
         "${workspaceFolder}/setup.cfg"
     ],
     "conventionalCommits.scopes": [
-        "application"
+        "application",
+        "domain"
     ],
 }
