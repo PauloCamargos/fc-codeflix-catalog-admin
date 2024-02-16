@@ -68,7 +68,7 @@ class TestCreateCastMember:
         use_case = CreateCastMember(
             repository=mocked_cast_member_repository,
         )
-        input = CreateCastMember.Input(name="John Doe", type="PRODUCER")
+        input = CreateCastMember.Input(name="John Doe", type="DOES_NOT_EXIST_TYPE")
         valid_types = ", ".join(repr(str(t)) for t in CastMemberType)
         with pytest.raises(
             InvalidCastMemberData,

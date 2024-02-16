@@ -30,7 +30,7 @@ class TestCastMember:
             InvalidCastMemberTypeError,
             match=f"Type must be one of: {valid_types}",
         ):
-            CastMember(name="John", type="PRODUCER")
+            CastMember(name="John", type="DOES_NOT_EXIST_TYPE")
 
     def test_create_cast_member_do_not_provide_id_success(self):
         cast_member = CastMember(name="John", type="ACTOR")
@@ -54,7 +54,7 @@ def actor_cast_member() -> CastMember:
 
 class TestUpdateCastMember:
     def test_update_cast_member_invalid_type_error(self, actor_cast_member: CastMember):
-        new_type = "PRODUCER"
+        new_type = "DOES_NOT_EXIST_TYPE"
         valid_types = ", ".join(repr(str(t)) for t in CastMemberType)
         with pytest.raises(
             InvalidCastMemberTypeError,
@@ -79,7 +79,7 @@ class TestUpdateCastMember:
                 f"{MAX_CAST_MEMBER_NAME_NUM_CHARACTERS} characters"
             ),
         ):
-            actor_cast_member.update_member_name(name=new_name)
+            actor_cast_member.update_name(name=new_name)
 
     def test_update_cast_member_invalid_empty_name_error(
         self, actor_cast_member: CastMember
@@ -89,11 +89,11 @@ class TestUpdateCastMember:
             ValueError,
             match="'name' must not be empty",
         ):
-            actor_cast_member.update_member_name(name=new_name)
+            actor_cast_member.update_name(name=new_name)
 
     def test_update_cast_member_name_success(self, actor_cast_member: CastMember):
         new_name = "Jonathan"
-        actor_cast_member.update_member_name(name=new_name)
+        actor_cast_member.update_name(name=new_name)
         assert actor_cast_member.name == new_name
 
 
