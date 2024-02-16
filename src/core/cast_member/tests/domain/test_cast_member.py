@@ -2,10 +2,11 @@ from uuid import UUID, uuid4
 import pytest
 
 from src.core.cast_member.domain.cast_member import (
-    MAX_CAST_MEMBER_NAME_NUM_CARACTERS,
+    MAX_CAST_MEMBER_NAME_NUM_CHARACTERS,
     CastMember,
     CastMemberType,
 )
+from src.core.cast_member.domain.errors import InvalidCastMemberTypeError
 
 
 class TestCastMember:
@@ -23,10 +24,11 @@ class TestCastMember:
         ):
             CastMember(name="John")
 
-    def test_create_cast_member_invalid_type(self):
+    def test_create_cast_member_invalid_type_error(self):
+        valid_types = ", ".join(repr(str(t)) for t in CastMemberType)
         with pytest.raises(
-            ValueError,
-            match="'PRODUCER' is not a valid CastMemberType",
+            InvalidCastMemberTypeError,
+            match=f"Type must be one of: {valid_types}",
         ):
             CastMember(name="John", type="PRODUCER")
 
@@ -53,9 +55,10 @@ def actor_cast_member() -> CastMember:
 class TestUpdateCastMember:
     def test_update_cast_member_invalid_type_error(self, actor_cast_member: CastMember):
         new_type = "PRODUCER"
+        valid_types = ", ".join(repr(str(t)) for t in CastMemberType)
         with pytest.raises(
-            ValueError,
-            match="'PRODUCER' is not a valid CastMemberType",
+            InvalidCastMemberTypeError,
+            match=f"Type must be one of: {valid_types}",
         ):
             actor_cast_member.update_type(type=new_type)
 
@@ -68,12 +71,12 @@ class TestUpdateCastMember:
         self,
         actor_cast_member: CastMember,
     ):
-        new_name = "H" * (MAX_CAST_MEMBER_NAME_NUM_CARACTERS + 1)
+        new_name = "H" * (MAX_CAST_MEMBER_NAME_NUM_CHARACTERS + 1)
         with pytest.raises(
             ValueError,
             match=(
                 "'name' must have less than "
-                f"{MAX_CAST_MEMBER_NAME_NUM_CARACTERS} characters"
+                f"{MAX_CAST_MEMBER_NAME_NUM_CHARACTERS} characters"
             ),
         ):
             actor_cast_member.update_member_name(name=new_name)
