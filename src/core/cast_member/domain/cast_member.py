@@ -21,7 +21,7 @@ class CastMember:
     type: CastMemberType = field(compare=False)
     id: UUID = field(default_factory=uuid4)
 
-    def update_member_name(self, name: str) -> None:
+    def update_name(self, name: str) -> None:
         self.name = name
         self.validate()
 
