@@ -26,4 +26,7 @@
         "--settings-file",
         "${workspaceFolder}/setup.cfg"
     ],
+    "conventionalCommits.scopes": [
+        "application"
+    ],
 }
