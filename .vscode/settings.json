@@ -29,6 +29,9 @@
     "conventionalCommits.scopes": [
         "application",
         "domain",
-        "infra"
+        "infra",
+        "django_app/infra",
+        "django_app/models",
+        "django_app/views",
     ],
 }
