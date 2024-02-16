@@ -18,7 +18,7 @@ class CastMemberType(str, Enum):
 @dataclass
 class CastMember:
     name: str = field(compare=False)
-    type: CastMemberType = field(compare=False)
+    type: CastMemberType | str = field(compare=False)
     id: UUID = field(default_factory=uuid4)
 
     def update_name(self, name: str) -> None:

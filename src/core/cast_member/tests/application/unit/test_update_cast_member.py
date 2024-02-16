@@ -38,10 +38,10 @@ class TestUpdateCastMember:
     ):
         mocked_cast_member_repository.get_by_id.return_value = actor_cast_member
         initial_actor_cast_member = CastMember(**asdict(actor_cast_member))
-
+        new_name = "Jonathan"
         input = UpdateCastMember.Input(
             id=actor_cast_member.id,
-            name="Jonathan",
+            name=new_name,
         )
 
         use_case = UpdateCastMember(repository=mocked_cast_member_repository)
@@ -54,7 +54,7 @@ class TestUpdateCastMember:
 
         expected_updated_cast_member = CastMember(
             id=actor_cast_member.id,
-            name=input.name,
+            name=new_name,
             type=actor_cast_member.type,
         )
 
@@ -80,9 +80,10 @@ class TestUpdateCastMember:
         mocked_cast_member_repository.get_by_id.return_value = actor_cast_member
         initial_actor_cast_member = CastMember(**asdict(actor_cast_member))
 
+        new_type = "DIRECTOR"
         input = UpdateCastMember.Input(
             id=actor_cast_member.id,
-            type="DIRECTOR",
+            type=new_type,
         )
 
         use_case = UpdateCastMember(repository=mocked_cast_member_repository)
@@ -96,7 +97,7 @@ class TestUpdateCastMember:
         expected_updated_cast_member = CastMember(
             id=actor_cast_member.id,
             name=actor_cast_member.name,
-            type=input.type,
+            type=new_type,
         )
 
         mocked_cast_member_repository.update.assert_called_once_with(

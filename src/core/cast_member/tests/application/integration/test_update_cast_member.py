@@ -55,6 +55,8 @@ class TestUpdateCastMember:
             id=actor_cast_member.id,
         )
 
+        assert cast_member_updated is not None
+
         assert cast_member_updated.id == initial_actor_cast_member.id
         assert cast_member_updated.name == input.name
         assert cast_member_updated.type == initial_actor_cast_member.type
@@ -78,6 +80,8 @@ class TestUpdateCastMember:
         cast_member_updated = cast_member_repository.get_by_id(
             id=actor_cast_member.id,
         )
+
+        assert cast_member_updated is not None
 
         assert cast_member_updated.id == initial_actor_cast_member.id
         assert cast_member_updated.name == initial_actor_cast_member.name

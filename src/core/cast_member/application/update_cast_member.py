@@ -27,7 +27,7 @@ class UpdateCastMember:
     def __init__(self, repository: AbstractCastMemberRepository):
         self.repository = repository
 
-    def execute(self, input: Input) -> None:
+    def execute(self, input: Input) -> Output:
         cast_member = self.repository.get_by_id(id=input.id)
 
         if cast_member is None:

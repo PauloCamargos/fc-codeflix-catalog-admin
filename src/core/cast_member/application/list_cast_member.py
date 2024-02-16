@@ -25,7 +25,7 @@ class ListCastMember:
     def __init__(self, repository: AbstractCastMemberRepository):
         self.repository = repository
 
-    def execute(self, input: Input) -> list[Output]:
+    def execute(self, input: Input) -> Output:
         cast_members = self.repository.list()
 
         return ListCastMember.Output(

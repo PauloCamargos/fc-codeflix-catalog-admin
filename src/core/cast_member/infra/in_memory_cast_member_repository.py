@@ -10,8 +10,9 @@ class InMemoryCastMemberRepository(AbstractCastMemberRepository):
     def __init__(self, cast_members: list[CastMember] | None = None):
         self.cast_members: list[CastMember] = cast_members or []
 
-    def save(self, cast_member: CastMember) -> None:
+    def save(self, cast_member: CastMember) -> UUID:
         self.cast_members.append(cast_member)
+        return cast_member.id
 
     def get_by_id(self, id: UUID) -> CastMember | None:
         return next(
