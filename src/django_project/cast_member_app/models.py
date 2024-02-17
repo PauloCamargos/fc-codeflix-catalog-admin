@@ -14,7 +14,7 @@ def cast_member_choices() -> dict[str, str]:
 
 class CastMember(models.Model):
     class Meta:
-        app_label = "cast_member"
+        app_label = "cast_member_app"
         db_table = "cast_member"
         verbose_name_plural = "cast_members"
 
