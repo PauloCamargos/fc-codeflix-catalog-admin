@@ -1,0 +1,1 @@
+[{"model": "cast_member_app.castmember", "pk": "81610cd1-78ad-4c93-b39f-529018de00f8", "fields": {"name": "Jane Doe", "type": "ACTOR"}}, {"model": "cast_member_app.castmember", "pk": "e1fc3cd5-fe90-4e34-b345-fec6dabdd937", "fields": {"name": "John Doe", "type": "ACTOR"}}]

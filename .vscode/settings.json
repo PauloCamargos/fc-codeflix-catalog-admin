@@ -9,7 +9,8 @@
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
     "flake8.args": [
-        "--max-line-length=88"
+        "--max-line-length=88",
+        "--exclude=.venv,migrations"
     ],
     "python.testing.pytestArgs": [
         "."
@@ -25,5 +26,13 @@
     "isort.args": [
         "--settings-file",
         "${workspaceFolder}/setup.cfg"
+    ],
+    "conventionalCommits.scopes": [
+        "application",
+        "domain",
+        "infra",
+        "django_app/infra",
+        "django_app/models",
+        "django_app/views",
     ],
 }
