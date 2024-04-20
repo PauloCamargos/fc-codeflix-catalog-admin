@@ -1,6 +1,5 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from uuid import UUID, uuid4
 
 from src.core.cast_member.domain.errors import InvalidCastMemberTypeError
 from src.core.category.shared.domain.entity import Entity
