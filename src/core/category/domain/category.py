@@ -43,8 +43,7 @@ class Category(Entity):
                 f"{CATEGORY_DESCRIPTION_MAX_LENGTH} characters"
             )
 
-        if self.notification.has_errors:
-            raise ValueError(self.notification.messages)
+        super().validate()
 
     def __str__(self) -> str:
         prefixes: list[str] = []

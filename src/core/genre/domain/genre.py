@@ -1,15 +1,16 @@
 from dataclasses import dataclass, field
 from uuid import UUID, uuid4
 
+from src.core.category.shared.domain.entity import Entity
+
 MAX_GENRE_NAME_NUM_CARACTERS = 255
 DEFAULT_GENRE_IS_ACTIVE = True
 
 
-@dataclass
-class Genre:
-    name: str = field(compare=False)
-    id: UUID = field(default_factory=uuid4)
-    is_active: bool = field(default=DEFAULT_GENRE_IS_ACTIVE, compare=False)
+@dataclass(eq=False)
+class Genre(Entity):
+    name: str
+    is_active: bool = field(default=DEFAULT_GENRE_IS_ACTIVE)
     categories: set[UUID] = field(default_factory=set)
 
     def activate(self) -> None:
@@ -36,16 +37,15 @@ class Genre:
 
     def validate(self) -> None:
         if len(self.name) > MAX_GENRE_NAME_NUM_CARACTERS:
-            raise ValueError(
+            self.notification.add_error(
                 "'name' must have less than "
                 f"{MAX_GENRE_NAME_NUM_CARACTERS} characters"
             )
 
         if self.name == "":
-            raise ValueError("'name' must not be empty")
+            self.notification.add_error("'name' must not be empty")
 
-    def __post_init__(self):
-        self.validate()
+        super().validate()
 
     def __str__(self) -> str:
         prefixes: list[str] = []

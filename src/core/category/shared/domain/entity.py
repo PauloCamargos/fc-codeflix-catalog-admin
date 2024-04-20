@@ -18,7 +18,8 @@ class Entity(ABC):
 
     @abstractmethod
     def validate(self) -> None:
-        ...
+        if self.notification.has_errors:
+            raise ValueError(self.notification.messages)
 
     def __post_init__(self):
         self.validate()
