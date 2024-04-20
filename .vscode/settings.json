@@ -13,6 +13,7 @@
         "--exclude=.venv,migrations"
     ],
     "python.testing.pytestArgs": [
+        "-vv",
         "."
     ],
     "python.testing.unittestEnabled": false,
