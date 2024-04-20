@@ -149,7 +149,7 @@ class CategoryViewSet(viewsets.ViewSet):
             data=serialized_output.data,
         )
 
-    def delete(self, request: Request, pk=None) -> Response:
+    def destroy(self, request: Request, pk=None) -> Response:
         serializer_input = DeleteCategoryRequestSerializer(data={"id": pk})
         serializer_input.is_valid(raise_exception=True)
 
