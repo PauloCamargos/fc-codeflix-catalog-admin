@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
-from uuid import UUID, uuid4
 
-from src.core.category.shared.notification import Notification
+from src.core.category.shared.domain.entity import Entity
 
 MAX_CATEGORY_NAME_NUM_CARACTERS = 255
 DEFAULT_CATEGORY_DESCRIPTION = ""
@@ -9,14 +8,11 @@ DEFAULT_CATEGORY_IS_ACTIVE = False
 CATEGORY_DESCRIPTION_MAX_LENGTH = 1024
 
 
-@dataclass
-class Category:
-    name: str = field(compare=False)
-    description: str = field(default=DEFAULT_CATEGORY_DESCRIPTION, compare=False)
-    is_active: bool = field(default=DEFAULT_CATEGORY_IS_ACTIVE, compare=False)
-    id: UUID = field(default_factory=uuid4)
-
-    notification: Notification = field(default_factory=Notification, compare=False)
+@dataclass(eq=False)
+class Category(Entity):
+    name: str
+    description: str = field(default=DEFAULT_CATEGORY_DESCRIPTION)
+    is_active: bool = field(default=DEFAULT_CATEGORY_IS_ACTIVE)
 
     def activate(self) -> None:
         self.is_active = True
@@ -40,7 +36,7 @@ class Category:
 
         if self.name == "":
             self.notification.add_error("'name' must not be empty")
-        
+
         if len(self.description) > CATEGORY_DESCRIPTION_MAX_LENGTH:
             self.notification.add_error(
                 "'description' cannot be longer than "
@@ -49,9 +45,6 @@ class Category:
 
         if self.notification.has_errors:
             raise ValueError(self.notification.messages)
-
-    def __post_init__(self):
-        self.validate()
 
     def __str__(self) -> str:
         prefixes: list[str] = []
