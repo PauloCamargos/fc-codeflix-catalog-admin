@@ -61,8 +61,8 @@ class TestDeleteGenre:
 
         delete_genre.execute(input=input)
 
-        assert len(genre_repository.list_genres()) == 1
-        assert horror_genre in genre_repository.list_genres()
+        assert len(genre_repository.list()) == 1
+        assert horror_genre in genre_repository.list()
 
     def test_delete_genre_does_not_exist_error(
         self,
@@ -77,7 +77,7 @@ class TestDeleteGenre:
         with pytest.raises(GenreNotFound):
             delete_genre.execute(input=input)
 
-        exising_genres = genre_repository.list_genres()
+        exising_genres = genre_repository.list()
         assert len(exising_genres) == 2
         assert romance_genre in exising_genres
         assert horror_genre in exising_genres

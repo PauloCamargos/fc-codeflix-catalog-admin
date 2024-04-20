@@ -13,7 +13,8 @@ class AbstractGenreRepository(ABC):
     def get_by_id(self, id: UUID) -> Genre | None:
         raise NotImplementedError
 
-    def list_genres(self) -> list[Genre]:
+    @abstractmethod
+    def list(self) -> list[Genre]:
         raise NotImplementedError
 
     @abstractmethod

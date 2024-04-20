@@ -113,7 +113,7 @@ class TestList:
         romance_genre: Genre,
         genre_repository_with_romance_genre: DjangoORMGenreRepository,
     ):
-        genres = genre_repository_with_romance_genre.list_genres()
+        genres = genre_repository_with_romance_genre.list()
 
         assert genres == [romance_genre]
 
@@ -121,7 +121,7 @@ class TestList:
         self,
         genre_repository: DjangoORMGenreRepository,
     ):
-        genres = genre_repository.list_genres()
+        genres = genre_repository.list()
         assert genres == []
 
 

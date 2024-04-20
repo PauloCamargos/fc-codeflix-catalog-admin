@@ -1,8 +1,32 @@
 from uuid import UUID
 
-from src.django_project.category_app.models import Category as CategoryModel
 from src.core.category.domain.category import Category
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
+from src.django_project.category_app.models import Category as CategoryModel
+from src.django_project.shared.repository.mapper import BaseORMMapper
+
+
+class CategoryMapper(BaseORMMapper):
+    @staticmethod
+    def to_model(entity: Category, save: bool = False) -> CategoryModel:
+        instance = CategoryModel(
+            id=entity.id,
+            name=entity.name,
+            description=entity.description,
+            is_active=entity.is_active,
+        )
+        if save:
+            instance.save()
+        return instance
+
+    @staticmethod
+    def to_entity(model: CategoryModel) -> Category:
+        return Category(
+            id=model.id,
+            name=model.name,
+            description=model.description,
+            is_active=model.is_active,
+        )
 
 
 class DjangoORMCategoryRepository(AbstractCategoryRepository):
@@ -10,40 +34,21 @@ class DjangoORMCategoryRepository(AbstractCategoryRepository):
         self.category_model = category_model
 
     def save(self, category: Category) -> None:
-        self.category_model.objects.create(
-            id=category.id,
-            name=category.name,
-            description=category.description,
-            is_active=category.is_active,
-        )
+        CategoryMapper.to_model(category, save=True)
 
     def get_by_id(self, id: UUID) -> Category | None:
         try:
             found_category = self.category_model.objects.get(id=id)
         except self.category_model.DoesNotExist:
             return None
-        else:
-            category = Category(
-                id=found_category.id,
-                name=found_category.name,
-                description=found_category.description,
-                is_active=found_category.is_active,
-            )
 
-        return category
+        return CategoryMapper.to_entity(found_category)
 
     def list_categories(self) -> list[Category]:
-        categories = [
-            Category(
-                id=found_category.id,
-                name=found_category.name,
-                description=found_category.description,
-                is_active=found_category.is_active,
-            )
+        return [
+            CategoryMapper.to_entity(found_category)
             for found_category in self.category_model.objects.all()
         ]
-
-        return categories
 
     def delete(self, id: UUID) -> None:
         self.category_model.objects.filter(id=id).delete()

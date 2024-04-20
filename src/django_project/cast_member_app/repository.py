@@ -5,6 +5,28 @@ from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
 )
 from src.django_project.cast_member_app.models import CastMember as CastMemberModel
+from src.django_project.shared.repository.mapper import BaseORMMapper
+
+
+class CastMemberMapper(BaseORMMapper):
+    @staticmethod
+    def to_model(entity: CastMember, save: bool = False) -> CastMemberModel:
+        instance = CastMemberModel(
+            id=entity.id,
+            name=entity.name,
+            type=entity.type,
+        )
+        if save:
+            instance.save()
+        return instance
+
+    @staticmethod
+    def to_entity(model: CastMemberModel) -> CastMember:
+        return CastMember(
+            id=model.id,
+            name=model.name,
+            type=model.type,
+        )
 
 
 class DjangoORMCastMemberRepository(AbstractCastMemberRepository):
@@ -12,14 +34,8 @@ class DjangoORMCastMemberRepository(AbstractCastMemberRepository):
     def __init__(self, cast_member_model: type[CastMemberModel] = CastMemberModel):
         self.cast_member_model = cast_member_model
 
-    def save(self, cast_member: CastMember) -> UUID:
-        created_cast_member = self.cast_member_model.objects.create(
-            id=cast_member.id,
-            name=cast_member.name,
-            type=cast_member.type,
-        )
-
-        return created_cast_member.id
+    def save(self, cast_member: CastMember) -> None:
+        CastMemberMapper.to_model(cast_member, save=True)
 
     def get_by_id(self, id: UUID) -> CastMember | None:
         try:
@@ -27,23 +43,18 @@ class DjangoORMCastMemberRepository(AbstractCastMemberRepository):
         except self.cast_member_model.DoesNotExist:
             return None
 
-        return CastMember(
-            id=found_cast_member.id,
-            name=found_cast_member.name,
-            type=found_cast_member.type,
-        )
+        return CastMemberMapper.to_entity(found_cast_member)
 
     def list(self) -> list[CastMember]:
         found_cast_members = self.cast_member_model.objects.all()
 
         return [
-            CastMember(
-                id=found_cast_member.id,
-                name=found_cast_member.name,
-                type=found_cast_member.type,
-            )
+            CastMemberMapper.to_entity(found_cast_member)
             for found_cast_member in found_cast_members
         ]
+
+    def delete(self, id: UUID) -> None:
+        self.cast_member_model.objects.filter(id=id).delete()
 
     def update(self, cast_member: CastMember) -> None:
         self.cast_member_model.objects.filter(id=cast_member.id).update(
@@ -51,6 +62,3 @@ class DjangoORMCastMemberRepository(AbstractCastMemberRepository):
             name=cast_member.name,
             type=cast_member.type,
         )
-
-    def delete(self, id: UUID) -> None:
-        self.cast_member_model.objects.filter(id=id).delete()

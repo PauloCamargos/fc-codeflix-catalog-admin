@@ -19,7 +19,7 @@ class InMemoryGenreRepository(AbstractGenreRepository):
         if genre:
             self.genres.remove(genre)
 
-    def list_genres(self) -> list[Genre]:
+    def list(self) -> list[Genre]:
         return [genre for genre in self.genres]
 
     def update(self, genre: Genre) -> None:

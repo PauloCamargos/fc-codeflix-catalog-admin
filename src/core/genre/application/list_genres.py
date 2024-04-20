@@ -25,7 +25,7 @@ class ListGenres:
         self.repository = repository
 
     def execute(self, input: Input) -> Output:
-        genres = self.repository.list_genres()
+        genres = self.repository.list()
 
         return ListGenres.Output(
             data=[

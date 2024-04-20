@@ -5,6 +5,32 @@ from django.db import transaction
 from src.core.genre.domain.genre import Genre
 from src.core.genre.gateway.genre_gateway import AbstractGenreRepository
 from src.django_project.genre_app.models import Genre as GenreModel
+from src.django_project.shared.repository.mapper import BaseORMMapper
+
+
+class GenreMapper(BaseORMMapper):
+    @staticmethod
+    def to_model(entity: Genre, save: bool = False) -> GenreModel:
+        instance = GenreModel(
+                id=entity.id,
+                name=entity.name,
+                is_active=entity.is_active,
+            )
+        if save:
+            instance.save()
+        return instance
+
+    @staticmethod
+    def to_entity(model: GenreModel) -> Genre:
+        return Genre(
+            id=model.id,
+            name=model.name,
+            is_active=model.is_active,
+            categories=set(
+                category.id
+                for category in model.categories.all()
+            )
+        )
 
 
 class DjangoORMGenreRepository(AbstractGenreRepository):
@@ -13,11 +39,7 @@ class DjangoORMGenreRepository(AbstractGenreRepository):
 
     def save(self, genre: Genre) -> None:
         with transaction.atomic():
-            genre_model = GenreModel.objects.create(
-                id=genre.id,
-                name=genre.name,
-                is_active=genre.is_active,
-            )
+            genre_model = GenreMapper.to_model(genre, save=True)
             genre_model.categories.set(genre.categories)
 
     def get_by_id(self, id: UUID) -> Genre | None:
@@ -30,29 +52,13 @@ class DjangoORMGenreRepository(AbstractGenreRepository):
         except self.genre_model.DoesNotExist:
             return None
 
-        return Genre(
-            id=genre_model.id,
-            name=genre_model.name,
-            is_active=genre_model.is_active,
-            categories=set(
-                category.id
-                for category in genre_model.categories.all()
-            )
-        )
+        return GenreMapper.to_entity(genre_model)
 
-    def list_genres(self) -> list[Genre]:
+    def list(self) -> list[Genre]:
         genre_models = self.genre_model.objects.all()
 
         return [
-            Genre(
-                id=genre_model.id,
-                name=genre_model.name,
-                is_active=genre_model.is_active,
-                categories=set(
-                    category.id
-                    for category in genre_model.categories.only("id")
-                )
-            )
+            GenreMapper.to_entity(genre_model)
             for genre_model in genre_models
         ]
 
