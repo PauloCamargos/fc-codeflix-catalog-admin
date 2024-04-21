@@ -35,14 +35,14 @@ def mocked_category_repository_with_categories(
     documentary_category,
 ) -> AbstractCategoryRepository:
     repository = create_autospec(AbstractCategoryRepository)
-    repository.list_categories.return_value = [movie_category, documentary_category]
+    repository.list.return_value = [movie_category, documentary_category]
     return repository
 
 
 @pytest.fixture
 def mocked_empty_category_repository() -> AbstractCategoryRepository:
     repository = create_autospec(AbstractCategoryRepository)
-    repository.list_categories.return_value = []
+    repository.list.return_value = []
     return repository
 
 
@@ -68,7 +68,7 @@ class TestCreateGenre:
                 )
             )
 
-        mocked_empty_category_repository.list_categories.assert_called_once_with()
+        mocked_empty_category_repository.list.assert_called_once_with()
         mocked_genre_repository.save.assert_not_called()
         assert str(category_id) in str(exc.value)
 
@@ -92,7 +92,7 @@ class TestCreateGenre:
                 )
             )
 
-        mocked_category_repository_with_categories.list_categories.assert_called_with()
+        mocked_category_repository_with_categories.list.assert_called_with()
         mocked_genre_repository.save.assert_not_called()
 
     def test_when_created_genre_is_valid_and_categories_exist_then_save_genre(
@@ -115,7 +115,7 @@ class TestCreateGenre:
         )
 
         assert output == CreateGenre.Output(id=output.id)
-        mocked_category_repository_with_categories.list_categories.assert_called_with()
+        mocked_category_repository_with_categories.list.assert_called_with()
         mocked_genre_repository.save.assert_called_once_with(
             Genre(
                 id=output.id,
@@ -141,7 +141,7 @@ class TestCreateGenre:
             )
         )
 
-        mocked_category_repository_with_categories.list_categories.assert_called_with()
+        mocked_category_repository_with_categories.list.assert_called_with()
 
         assert output == CreateGenre.Output(id=output.id)
         mocked_genre_repository.save.assert_called_once_with(

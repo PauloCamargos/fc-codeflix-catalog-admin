@@ -11,14 +11,14 @@ class TestListCategoryIntegration:
 
     def test_list_categories_empty_success(self) -> None:
         repository = create_autospec(AbstractCategoryRepository)
-        repository.list_categories.return_value = []
+        repository.list.return_value = []
 
         list_categories = ListCategories(repository=repository)
 
         input = ListCategoryInput()
         list_categories_output = list_categories.execute(input=input)
 
-        assert repository.list_categories.call_args_list == [
+        assert repository.list.call_args_list == [
             call(),
         ]
 
@@ -36,14 +36,14 @@ class TestListCategoryIntegration:
             is_active=True,
         )
         repository = create_autospec(AbstractCategoryRepository)
-        repository.list_categories.return_value = [movie_category, serie_category]
+        repository.list.return_value = [movie_category, serie_category]
 
         list_categories = ListCategories(repository=repository)
 
         input = ListCategoryInput()
         list_categories_output = list_categories.execute(input=input)
 
-        assert repository.list_categories.call_args_list == [
+        assert repository.list.call_args_list == [
             call(),
         ]
 

@@ -32,7 +32,7 @@ class CreateGenre:
     def execute(self, input: Input) -> Output:
         existing_category_ids = {
             category.id
-            for category in self.category_repository.list_categories()
+            for category in self.category_repository.list()
         }
 
         input_categories_set = set(input.categories)

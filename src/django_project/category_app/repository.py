@@ -44,10 +44,15 @@ class DjangoORMCategoryRepository(AbstractCategoryRepository):
 
         return CategoryMapper.to_entity(found_category)
 
-    def list_categories(self) -> list[Category]:
+    def list(self, order_by: str | None = None) -> list[Category]:
+        queryset = self.category_model.objects.all()
+
+        if order_by is not None:
+            queryset = queryset.order_by(order_by)
+
         return [
-            CategoryMapper.to_entity(found_category)
-            for found_category in self.category_model.objects.all()
+            CategoryMapper.to_entity(category)
+            for category in queryset
         ]
 
     def delete(self, id: UUID) -> None:

@@ -57,7 +57,7 @@ class TestCreateGenreIntegration:
         assert saved_genre is not None
         assert saved_genre.name == create_genre_input.name
         assert saved_genre.is_active == create_genre_input.is_active
-        assert saved_genre.categories == {movie_category.id, documentary_category.id}
+        assert saved_genre.categories == [movie_category.id, documentary_category.id]
 
     def test_create_genre_with_non_existent_categories(
         self,

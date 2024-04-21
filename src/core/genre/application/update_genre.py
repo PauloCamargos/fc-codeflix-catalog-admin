@@ -47,7 +47,7 @@ class UpdateGenre:
 
             existing_category_ids = {
                 category.id
-                for category in self.category_repository.list_categories()
+                for category in self.category_repository.list()
             }
 
             if not set(input.categories).issubset(existing_category_ids):

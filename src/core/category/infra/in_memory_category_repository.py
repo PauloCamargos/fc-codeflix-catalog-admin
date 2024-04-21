@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from copy import deepcopy
 from src.core.category.domain.category import Category
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 
@@ -7,39 +8,46 @@ from src.core.category.gateway.category_gateway import AbstractCategoryRepositor
 class InMemoryCategoryRepository(AbstractCategoryRepository):
     def __init__(self, categories: list[Category] | None = None) -> None:
         if categories is None:
-            self._categories: dict[UUID, Category] = {}
+            self.categories = []
         else:
-            self._categories = {
-                category.id: category
-                for category in categories
-            }
-
-    @property
-    def categories(self) -> list[Category]:
-        return self.list_categories()
+            self.categories = categories
 
     def save(self, category: Category) -> None:
-        self._categories[category.id] = category
+        self.categories.append(category)
 
     def get_by_id(self, id: UUID) -> Category | None:
-        return self._categories.get(id)
+        return next(
+            (
+                deepcopy(category)
+                for category in self.categories
+                if category.id == id
+            ),
+            None,
+        )
 
-    def list_categories(self) -> list[Category]:
-        return [
-            Category(
-                id=category.id,
-                name=category.name,
-                description=category.description,
-                is_active=category.is_active,
+    def list(self, order_by: str | None = None) -> list[Category]:
+        categories = (
+            deepcopy(category)
+            for category in self.categories
+        )
+
+        if order_by is not None:
+            return list(
+                sorted(
+                    categories,
+                    key=lambda category: getattr(category, order_by)
+                )
             )
-            for category in self._categories.values()
-        ]
+
+        return list(self.categories)
 
     def delete(self, id: UUID) -> None:
-        if id in self._categories:
-            del self._categories[id]
+        category = self.get_by_id(id)
+        if category:
+            self.categories.remove(category)
 
     def update(self, category: Category) -> None:
-        old_category = self.get_by_id(id=category.id)
-        if old_category is not None:
-            self._categories[category.id] = category
+        old_category = self.get_by_id(category.id)
+        if old_category:
+            self.categories.remove(old_category)
+            self.categories.append(category)

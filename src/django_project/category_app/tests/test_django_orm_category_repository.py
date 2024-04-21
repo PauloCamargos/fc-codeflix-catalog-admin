@@ -74,7 +74,7 @@ class TestCanListCategoriesRepository:
 
         repository = DjangoORMCategoryRepository()
 
-        found_categories = repository.list_categories()
+        found_categories = repository.list()
 
         assert len(found_categories) == 0
 
@@ -106,7 +106,7 @@ class TestCanListCategoriesRepository:
             for category in categories
         )
 
-        found_categories = repository.list_categories()
+        found_categories = repository.list()
 
         assert len(found_categories) == 2
         assert movie_category in found_categories
@@ -163,12 +163,7 @@ class TestUpdateDjangoORMCategoryRepository:
 
         repository = DjangoORMCategoryRepository()
 
-        repository.category_model.objects.create(
-            id=category.id,
-            name=category.name,
-            description=category.description,
-            is_active=category.is_active,
-        )
+        repository.save(category)
 
         updated_category_name = "Serie"
         category.update_category(
@@ -177,9 +172,9 @@ class TestUpdateDjangoORMCategoryRepository:
         )
         repository.update(category=category)
 
-        assert repository.category_model.objects.count() == 1
+        assert len(repository.list()) == 1
 
-        updated_category = repository.category_model.objects.get(id=category.id)
+        updated_category = repository.get_by_id(id=category.id)
 
         assert updated_category.id == category.id
         assert updated_category.name == updated_category_name

@@ -58,20 +58,19 @@ class DjangoORMGenreRepository(AbstractGenreRepository):
         return GenreMapper.to_entity(genre_model)
 
     def list(self, order_by: str | None = None) -> list[Genre]:
-        genre_models = (
+        queryset = (
             self.genre_model.objects
             .prefetch_related(self._get_categories_prefetch())
             .all()
         )
 
         if order_by is not None:
-            genre_models = genre_models.order_by(order_by)
+            queryset = queryset.order_by(order_by)
 
-        e = [
-            GenreMapper.to_entity(genre_model)
-            for genre_model in genre_models
+        return [
+            GenreMapper.to_entity(genre)
+            for genre in queryset
         ]
-        return e
 
     def delete(self, id: UUID) -> None:
         self.genre_model.objects.filter(id=id).delete()

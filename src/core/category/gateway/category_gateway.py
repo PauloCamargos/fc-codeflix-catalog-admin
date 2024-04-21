@@ -13,7 +13,7 @@ class AbstractCategoryRepository(ABC):
     def get_by_id(self, id: UUID) -> Category | None:
         raise NotImplementedError
 
-    def list_categories(self) -> list[Category]:
+    def list(self, order_by: str | None = None) -> list[Category]:
         raise NotImplementedError
 
     @abstractmethod
