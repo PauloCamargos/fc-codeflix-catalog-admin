@@ -17,14 +17,14 @@ class UpdateGenre:
         id: UUID
         name: str | None = None
         is_active: bool | None = None
-        categories: set[UUID] | None = None
+        categories: list[UUID] | None = None
 
     @dataclass
     class Output:
         id: UUID
         is_active: bool
         name: str
-        categories: set[UUID]
+        categories: list[UUID]
 
     def __init__(
         self,

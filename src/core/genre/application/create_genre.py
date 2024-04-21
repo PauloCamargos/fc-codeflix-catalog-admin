@@ -14,7 +14,7 @@ class CreateGenre:
     @dataclass
     class Input:
         name: str
-        categories: set[UUID] = field(default_factory=set)
+        categories: list[UUID] = field(default_factory=list)
         is_active: bool = True
 
     @dataclass

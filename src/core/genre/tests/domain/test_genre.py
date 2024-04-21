@@ -41,7 +41,7 @@ class TestCreateGenre:
             id=genre_id,
             name=genre_name,
             is_active=genre_is_active,
-            categories={category_id},
+            categories=[category_id],
         )
         assert genre.id == genre_id
         assert genre.name == genre_name
@@ -50,7 +50,7 @@ class TestCreateGenre:
 
     def test_create_genre_with_default_values_success(self):
         genre = Genre(name="Romance")
-        assert genre.categories == set()
+        assert genre.categories == list()
         assert genre.is_active
         assert isinstance(
             genre.id,
@@ -136,11 +136,11 @@ class TestGenreCategories:
         genre = Genre(name="Romance", categories={category_id})
         genre.add_category(id=category_id)
 
-        assert genre.categories == {category_id}
+        assert genre.categories == [category_id]
 
     def test_add_category_to_genre(self):
         category_id_1 = uuid.uuid4()
-        genre = Genre(name="Romance", categories={category_id_1})
+        genre = Genre(name="Romance", categories=[category_id_1])
         category_id_2 = uuid.uuid4()
         genre.add_category(id=category_id_2)
 
@@ -148,7 +148,7 @@ class TestGenreCategories:
 
     def test_remove_non_existing_category_from_genre(self):
         category_id_1 = uuid.uuid4()
-        genre = Genre(name="Romance", categories={category_id_1})
+        genre = Genre(name="Romance", categories=[category_id_1])
         category_id_2 = uuid.uuid4()
         genre.remove_category(id=category_id_2)
 
@@ -156,7 +156,7 @@ class TestGenreCategories:
 
     def test_remove_existing_category_from_genre(self):
         category_id_1 = uuid.uuid4()
-        genre = Genre(name="Romance", categories={category_id_1})
+        genre = Genre(name="Romance", categories=[category_id_1])
         genre.remove_category(id=category_id_1)
 
         assert genre.categories == set()

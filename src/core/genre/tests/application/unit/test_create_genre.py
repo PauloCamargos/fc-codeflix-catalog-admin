@@ -121,7 +121,7 @@ class TestCreateGenre:
                 id=output.id,
                 name="Romance",
                 is_active=True,
-                categories={documentary_category.id, movie_category.id},
+                categories=[documentary_category.id, movie_category.id],
             )
         )
 
@@ -149,6 +149,6 @@ class TestCreateGenre:
                 id=output.id,
                 name="Romance",
                 is_active=True,
-                categories=set(),
+                categories=list(),
             )
         )

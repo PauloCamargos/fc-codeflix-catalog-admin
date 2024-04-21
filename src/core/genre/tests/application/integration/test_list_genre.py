@@ -26,7 +26,7 @@ def romance_genre(
 ) -> Genre:
     return Genre(
         name="Romance",
-        categories={movie_category.id, documentary_category.id},
+        categories=[movie_category.id, documentary_category.id],
     )
 
 

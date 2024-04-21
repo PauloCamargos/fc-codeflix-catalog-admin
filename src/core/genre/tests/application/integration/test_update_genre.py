@@ -26,7 +26,7 @@ def sci_fi_genre(
 ) -> Genre:
     return Genre(
         name="Sci-fi",
-        categories={movie_category.id, documentary_category.id},
+        categories=[movie_category.id, documentary_category.id],
     )
 
 
