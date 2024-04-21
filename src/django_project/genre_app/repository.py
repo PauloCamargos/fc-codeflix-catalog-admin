@@ -1,9 +1,11 @@
 from uuid import UUID
 
 from django.db import transaction
+from django.db.models import Prefetch
 
 from src.core.genre.domain.genre import Genre
 from src.core.genre.gateway.genre_gateway import AbstractGenreRepository
+from src.django_project.category_app.models import Category as CategoryModel
 from src.django_project.genre_app.models import Genre as GenreModel
 from src.django_project.shared.repository.mapper import BaseORMMapper
 
@@ -28,7 +30,7 @@ class GenreMapper(BaseORMMapper[Genre, GenreModel]):
             is_active=model.is_active,
             categories=[
                 category.id
-                for category in model.categories.all().order_by("name")
+                for category in model.categories.all()
             ]
         )
 
@@ -46,8 +48,9 @@ class DjangoORMGenreRepository(AbstractGenreRepository):
         try:
             genre_model = (
                 self.genre_model.objects
-                .prefetch_related("categories")
-                .get(id=id)
+                .filter(id=id)
+                .prefetch_related(self._get_categories_prefetch())
+                .get()
             )
         except self.genre_model.DoesNotExist:
             return None
@@ -55,15 +58,20 @@ class DjangoORMGenreRepository(AbstractGenreRepository):
         return GenreMapper.to_entity(genre_model)
 
     def list(self, order_by: str | None = None) -> list[Genre]:
-        genre_models = self.genre_model.objects.all()
+        genre_models = (
+            self.genre_model.objects
+            .prefetch_related(self._get_categories_prefetch())
+            .all()
+        )
 
         if order_by is not None:
             genre_models = genre_models.order_by(order_by)
 
-        return [
+        e = [
             GenreMapper.to_entity(genre_model)
             for genre_model in genre_models
         ]
+        return e
 
     def delete(self, id: UUID) -> None:
         self.genre_model.objects.filter(id=id).delete()
@@ -80,3 +88,13 @@ class DjangoORMGenreRepository(AbstractGenreRepository):
                 is_active=genre.is_active,
             )
             genre_model.categories.set(genre.categories)
+
+    def _get_categories_prefetch(self) -> Prefetch:
+        return Prefetch(
+            "categories",
+            queryset=(
+                CategoryModel.objects
+                .order_by("name")
+                .only("id")
+            ),
+        )
