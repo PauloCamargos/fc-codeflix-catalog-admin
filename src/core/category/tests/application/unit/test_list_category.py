@@ -1,5 +1,6 @@
 from unittest.mock import call, create_autospec
 from src.core.category.application.list_categories import (
+    DEFAULT_CATEGORY_LIST_ORDER,
     ListCategories,
     ListCategoryInput,
 )
@@ -19,7 +20,7 @@ class TestListCategoryIntegration:
         list_categories_output = list_categories.execute(input=input)
 
         assert repository.list.call_args_list == [
-            call(),
+            call(order_by=DEFAULT_CATEGORY_LIST_ORDER),
         ]
 
         assert len(list_categories_output.data) == 0
@@ -44,7 +45,7 @@ class TestListCategoryIntegration:
         list_categories_output = list_categories.execute(input=input)
 
         assert repository.list.call_args_list == [
-            call(),
+            call(order_by=DEFAULT_CATEGORY_LIST_ORDER),
         ]
 
         assert len(list_categories_output.data) == 2

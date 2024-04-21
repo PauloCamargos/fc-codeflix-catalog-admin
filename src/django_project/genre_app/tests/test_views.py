@@ -6,10 +6,10 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from src.core.category.domain.category import Category
+from src.core.genre.application.list_genres import DEFAULT_GENRE_LIST_ORDER
 from src.core.genre.domain.genre import Genre
 from src.django_project.category_app.repository import DjangoORMCategoryRepository
 from src.django_project.genre_app.repository import DjangoORMGenreRepository
-from src.django_project.genre_app.views import DEFAULT_GENRE_VIEWSET_LIST_ORDER
 
 BASE_GENRE_URL = "/api/genres/"
 
@@ -80,7 +80,7 @@ class TestListAPI:
         presisted_romance_genre_with_categories: Genre,
         persisted_drama_genre_without_categories: Genre,
     ):
-        expected_persisted_genres: list[dict[str, Any]] = [
+        expected_genres: list[dict[str, Any]] = [
             {
                 "id": str(persisted_drama_genre_without_categories.id),
                 "name": persisted_drama_genre_without_categories.name,
@@ -99,7 +99,7 @@ class TestListAPI:
         ]
 
         if order_by is None:
-            order_by = DEFAULT_GENRE_VIEWSET_LIST_ORDER
+            order_by = DEFAULT_GENRE_LIST_ORDER
             params = {}
         else:
             params = {
@@ -108,7 +108,7 @@ class TestListAPI:
 
         expected_data = {
             "data": sorted(
-                expected_persisted_genres,
+                expected_genres,
                 key=lambda item: item[order_by.strip("-")],
                 reverse=order_by.startswith("-"),
             )

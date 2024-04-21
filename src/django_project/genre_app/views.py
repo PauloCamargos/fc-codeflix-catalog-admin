@@ -23,17 +23,14 @@ from src.django_project.genre_app.serializers import (
     UpdateGenreResponseSerializer,
 )
 
-DEFAULT_GENRE_VIEWSET_LIST_ORDER = "name"
-
 
 class GenreViewSet(viewsets.ViewSet):
     def list(self, request: Request) -> Response:
-        order_by = request.query_params.get(
-            "order_by",
-            DEFAULT_GENRE_VIEWSET_LIST_ORDER,
-        )
+        if "order_by" in request.query_params:
+            input = ListGenres.Input(order_by=request.query_params["order_by"])
+        else:
+            input = ListGenres.Input()
 
-        input = ListGenres.Input(order_by=order_by)
         use_case = ListGenres(repository=DjangoORMGenreRepository())
 
         output = use_case.execute(input=input)

@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from uuid import UUID
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 
+DEFAULT_CATEGORY_LIST_ORDER = "name"
+
 
 @dataclass
 class CategoryOutput:
@@ -13,7 +15,7 @@ class CategoryOutput:
 
 @dataclass
 class ListCategoryInput:
-    pass
+    order_by: str | None = None
 
 
 @dataclass
@@ -26,7 +28,12 @@ class ListCategories:
         self.repository = repository
 
     def execute(self, input: ListCategoryInput) -> ListCategoryOutput:
-        categories = self.repository.list()
+        if input.order_by is None:
+            order_by = DEFAULT_CATEGORY_LIST_ORDER
+        else:
+            order_by = input.order_by
+
+        categories = self.repository.list(order_by=order_by)
 
         return ListCategoryOutput(
             data=[

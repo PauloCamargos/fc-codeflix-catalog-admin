@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from uuid import UUID
 from src.core.genre.gateway.genre_gateway import AbstractGenreRepository
 
+DEFAULT_GENRE_LIST_ORDER = "name"
+
 
 @dataclass
 class GenreOutput:
@@ -15,7 +17,7 @@ class ListGenres:
 
     @dataclass
     class Input:
-        order_by: str = "name"
+        order_by: str | None = None
 
     @dataclass
     class Output:
@@ -25,7 +27,12 @@ class ListGenres:
         self.repository = repository
 
     def execute(self, input: Input) -> Output:
-        genres = self.repository.list(order_by=input.order_by)
+        if input.order_by is None:
+            order_by = DEFAULT_GENRE_LIST_ORDER
+        else:
+            order_by = input.order_by
+
+        genres = self.repository.list(order_by=order_by)
 
         return ListGenres.Output(
             data=[

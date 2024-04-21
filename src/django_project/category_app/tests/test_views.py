@@ -1,9 +1,11 @@
+from typing import Any
 from uuid import UUID, uuid4
 
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from src.core.category.application.list_categories import DEFAULT_CATEGORY_LIST_ORDER
 from src.core.category.domain.category import Category
 from src.django_project.category_app.repository import DjangoORMCategoryRepository
 
@@ -33,9 +35,13 @@ def category_repository() -> DjangoORMCategoryRepository:
 
 @pytest.mark.django_db
 class TestListCategoryAPI:
-
+    @pytest.mark.parametrize(
+        "order_by",
+        [None, "name", "-name", "description", "-description"]
+    )
     def test_list_categories(
         self,
+        order_by: str,
         category_movie: Category,
         category_serie: Category,
         category_repository: DjangoORMCategoryRepository,
@@ -43,25 +49,43 @@ class TestListCategoryAPI:
         category_repository.save(category_movie)
         category_repository.save(category_serie)
 
+        expected_categories: list[dict[str, Any]] = [
+            {
+                "id": str(category_movie.id),
+                "name": category_movie.name,
+                "description": category_movie.description,
+                "is_active": category_movie.is_active,
+            },
+            {
+                "id": str(category_serie.id),
+                "name": category_serie.name,
+                "description": category_serie.description,
+                "is_active": category_serie.is_active,
+            },
+        ]
+
         expected_data = {
-            "data": [
-                {
-                    "id": str(category_movie.id),
-                    "name": category_movie.name,
-                    "description": category_movie.description,
-                    "is_active": category_movie.is_active,
-                },
-                {
-                    "id": str(category_serie.id),
-                    "name": category_serie.name,
-                    "description": category_serie.description,
-                    "is_active": category_serie.is_active,
-                },
-            ]
+            "data": expected_categories
+        }
+
+        if order_by is None:
+            order_by = DEFAULT_CATEGORY_LIST_ORDER
+            params = {}
+        else:
+            params = {
+                "order_by": order_by,
+            }
+
+        expected_data = {
+            "data": sorted(
+                expected_categories,
+                key=lambda item: item[order_by.strip("-")],
+                reverse=order_by.startswith("-"),
+            )
         }
 
         url = "/api/categories/"
-        response = APIClient().get(url)
+        response = APIClient().get(url, params)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data == expected_data
