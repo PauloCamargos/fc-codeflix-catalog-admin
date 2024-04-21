@@ -39,18 +39,24 @@ class DjangoORMCastMemberRepository(AbstractCastMemberRepository):
 
     def get_by_id(self, id: UUID) -> CastMember | None:
         try:
-            found_cast_member = self.cast_member_model.objects.get(id=id)
+            cast_member = self.cast_member_model.objects.get(id=id)
         except self.cast_member_model.DoesNotExist:
             return None
 
-        return CastMemberMapper.to_entity(found_cast_member)
+        return CastMemberMapper.to_entity(cast_member)
 
-    def list(self) -> list[CastMember]:
-        found_cast_members = self.cast_member_model.objects.all()
+    def list(self, order_by: str | None = None) -> list[CastMember]:
+        queryset = (
+            self.cast_member_model.objects
+            .all()
+        )
+
+        if order_by is not None:
+            queryset = queryset.order_by(order_by)
 
         return [
-            CastMemberMapper.to_entity(found_cast_member)
-            for found_cast_member in found_cast_members
+            CastMemberMapper.to_entity(cast_member)
+            for cast_member in queryset
         ]
 
     def delete(self, id: UUID) -> None:

@@ -5,6 +5,8 @@ from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
 )
 
+DEFAULT_CAST_MEMBER_LIST_ORDER = "name"
+
 
 @dataclass
 class CastMemberOutput:
@@ -16,7 +18,7 @@ class CastMemberOutput:
 class ListCastMember:
     @dataclass
     class Input:
-        pass
+        order_by: str | None = None
 
     @dataclass
     class Output:
@@ -26,7 +28,12 @@ class ListCastMember:
         self.repository = repository
 
     def execute(self, input: Input) -> Output:
-        cast_members = self.repository.list()
+        if input.order_by is None:
+            order_by = DEFAULT_CAST_MEMBER_LIST_ORDER
+        else:
+            order_by = input.order_by
+
+        cast_members = self.repository.list(order_by=order_by)
 
         return ListCastMember.Output(
             data=[

@@ -64,10 +64,6 @@ class TestListCategoryAPI:
             },
         ]
 
-        expected_data = {
-            "data": expected_categories
-        }
-
         if order_by is None:
             order_by = DEFAULT_CATEGORY_LIST_ORDER
             params = {}

@@ -14,7 +14,7 @@ class AbstractCastMemberRepository(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def list(self) -> list[CastMember]:
+    def list(self, order_by: str | None = None) -> list[CastMember]:
         raise NotImplementedError()
 
     @abstractmethod

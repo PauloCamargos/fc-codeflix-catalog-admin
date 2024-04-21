@@ -5,6 +5,9 @@ import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from src.core.cast_member.application.list_cast_member import (
+    DEFAULT_CAST_MEMBER_LIST_ORDER,
+)
 from src.core.cast_member.domain.cast_member import CastMember
 from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
@@ -39,28 +42,46 @@ def persisted_director_cast_member(
 
 @pytest.mark.django_db
 class TestListAPI:
+    @pytest.mark.parametrize(
+        "order_by",
+        [None, "name", "-name"]
+    )
     def test_list_cast_members_success(
         self,
+        order_by,
         persisted_actor_cast_member: CastMember,
         persisted_director_cast_member: CastMember,
     ):
+        expected_cast_members = [
+            {
+                "id": str(persisted_actor_cast_member.id),
+                "name": persisted_actor_cast_member.name,
+                "type": persisted_actor_cast_member.type,
+            },
+            {
+                "id": str(persisted_director_cast_member.id),
+                "name": persisted_director_cast_member.name,
+                "type": persisted_director_cast_member.type,
+            }
+        ]
+
+        if order_by is None:
+            order_by = DEFAULT_CAST_MEMBER_LIST_ORDER
+            params = {}
+        else:
+            params = {
+                "order_by": order_by,
+            }
 
         expected_data = {
-            "data": [
-                {
-                    "id": str(persisted_actor_cast_member.id),
-                    "name": persisted_actor_cast_member.name,
-                    "type": persisted_actor_cast_member.type,
-                },
-                {
-                    "id": str(persisted_director_cast_member.id),
-                    "name": persisted_director_cast_member.name,
-                    "type": persisted_director_cast_member.type,
-                }
-            ]
+            "data": sorted(
+                expected_cast_members,
+                key=lambda item: item[order_by.strip("-")],
+                reverse=order_by.startswith("-"),
+            )
         }
 
-        response = APIClient().get(path=BASE_CAST_MEMBERS_URL)
+        response = APIClient().get(BASE_CAST_MEMBERS_URL, params)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data == expected_data

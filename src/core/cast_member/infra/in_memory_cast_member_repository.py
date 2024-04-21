@@ -1,6 +1,7 @@
+from copy import deepcopy
 from uuid import UUID
-from src.core.cast_member.domain.cast_member import CastMember
 
+from src.core.cast_member.domain.cast_member import CastMember
 from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
 )
@@ -15,7 +16,11 @@ class InMemoryCastMemberRepository(AbstractCastMemberRepository):
 
     def get_by_id(self, id: UUID) -> CastMember | None:
         return next(
-            (cast_member for cast_member in self.cast_members if cast_member.id == id),
+            (
+                deepcopy(cast_member)
+                for cast_member in self.cast_members
+                if cast_member.id == id
+            ),
             None,
         )
 
@@ -24,8 +29,20 @@ class InMemoryCastMemberRepository(AbstractCastMemberRepository):
         if cast_member:
             self.cast_members.remove(cast_member)
 
-    def list(self) -> list[CastMember]:
-        return [cast_member for cast_member in self.cast_members]
+    def list(self, order_by: str | None = None) -> list[CastMember]:
+        cast_members = (
+            deepcopy(cast_member)
+            for cast_member in self.cast_members
+        )
+        if order_by is not None:
+            return list(
+                sorted(
+                    cast_members,
+                    key=lambda cast_member: getattr(cast_member, order_by)
+                )
+            )
+
+        return list(self.cast_members)
 
     def update(self, cast_member: CastMember) -> None:
         old_cast_member = self.get_by_id(cast_member.id)
