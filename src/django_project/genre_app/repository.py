@@ -26,10 +26,10 @@ class GenreMapper(BaseORMMapper[Genre, GenreModel]):
             id=model.id,
             name=model.name,
             is_active=model.is_active,
-            categories=set(
+            categories=[
                 category.id
-                for category in model.categories.all()
-            )
+                for category in model.categories.all().order_by("name")
+            ]
         )
 
 
@@ -58,7 +58,7 @@ class DjangoORMGenreRepository(AbstractGenreRepository):
         genre_models = self.genre_model.objects.all()
 
         if order_by is not None:
-            genre_models.order_by(order_by)
+            genre_models = genre_models.order_by(order_by)
 
         return [
             GenreMapper.to_entity(genre_model)

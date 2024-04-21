@@ -11,7 +11,8 @@ DEFAULT_GENRE_IS_ACTIVE = True
 class Genre(Entity):
     name: str
     is_active: bool = field(default=DEFAULT_GENRE_IS_ACTIVE)
-    categories: set[UUID] = field(default_factory=set)
+    # FIXME: make it a list, as it helps sorting on REST
+    categories: list[UUID] = field(default_factory=list)
 
     def activate(self) -> None:
         self.is_active = True
@@ -26,7 +27,7 @@ class Genre(Entity):
         self.validate()
 
     def add_category(self, id: UUID) -> None:
-        self.categories.add(id)
+        self.categories.append(id)
         self.validate()
 
     def remove_category(self, id: UUID) -> None:

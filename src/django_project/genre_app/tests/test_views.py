@@ -8,6 +8,7 @@ from src.core.category.domain.category import Category
 from src.core.genre.domain.genre import Genre
 from src.django_project.category_app.repository import DjangoORMCategoryRepository
 from src.django_project.genre_app.repository import DjangoORMGenreRepository
+from src.django_project.genre_app.views import DEFAULT_GENRE_VIEWSET_LIST_ORDER
 
 BASE_GENRE_URL = "/api/genres/"
 
@@ -44,10 +45,10 @@ def presisted_romance_genre_with_categories(
 
     romance_genre = Genre(
         name="Romance",
-        categories={
-            movie_category.id,
+        categories=[
             documentary_category.id,
-        },
+            movie_category.id,
+        ],
     )
 
     genre_repository.save(genre=romance_genre)
@@ -63,43 +64,60 @@ def persisted_drama_genre_without_categories(
     genre_repository.save(genre=drama_genre)
     return drama_genre
 
-
 @pytest.mark.django_db
 class TestListAPI:
+    @pytest.mark.parametrize(
+        "order_by",
+        [None, "name", "-name"]
+    )
     def test_list_genres_and_categories_success(
         self,
+        order_by: str,
+        documentary_category: Category,
+        movie_category: Category,
         presisted_romance_genre_with_categories: Genre,
         persisted_drama_genre_without_categories: Genre,
     ):
+        expected_persisted_genres = [
+            {
+                "id": str(persisted_drama_genre_without_categories.id),
+                "name": persisted_drama_genre_without_categories.name,
+                "is_active": persisted_drama_genre_without_categories.is_active,
+                "categories": [],
+            },
+            {
+                "id": str(presisted_romance_genre_with_categories.id),
+                "name": presisted_romance_genre_with_categories.name,
+                "is_active": presisted_romance_genre_with_categories.is_active,
+                "categories": [
+                    str(documentary_category.id),
+                    str(movie_category.id),
+                ],
+            },
+        ]
+
+        if order_by is None:
+            order_by = DEFAULT_GENRE_VIEWSET_LIST_ORDER
+            params = {}
+        else:
+            params = {
+                "order_by": order_by,
+            }
 
         expected_data = {
-            "data": [
-                {
-                    "id": str(presisted_romance_genre_with_categories.id),
-                    "name": presisted_romance_genre_with_categories.name,
-                    "is_active": presisted_romance_genre_with_categories.is_active,
-                    "categories": [
-                        str(category_id)
-                        for category_id in (
-                            presisted_romance_genre_with_categories.categories
-                        )
-                    ],
-                },
-                {
-                    "id": str(persisted_drama_genre_without_categories.id),
-                    "name": persisted_drama_genre_without_categories.name,
-                    "is_active": persisted_drama_genre_without_categories.is_active,
-                    "categories": [],
-                }
-            ]
+            "data": sorted(
+                expected_persisted_genres,
+                key=lambda item: item[order_by.strip("-")],
+                reverse=order_by.startswith("-"),
+            )
         }
 
-        response = APIClient().get(path=BASE_GENRE_URL)
+        response = APIClient().get(BASE_GENRE_URL, params)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data == expected_data
 
-    def test_no_list_genres_and_categories(
+    def test_empty_list_genres_and_categories(
         self,
     ):
         expected_data = {"data": []}
