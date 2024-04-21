@@ -54,7 +54,7 @@ class TestUpdateGenre:
         input = UpdateGenre.Input(
             id=sci_fi_genre.id,
             name="Science Fiction",
-            categories={movie_category.id},
+            categories=[movie_category.id],
             is_active=not sci_fi_genre.is_active,
         )
 

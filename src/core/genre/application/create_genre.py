@@ -35,9 +35,11 @@ class CreateGenre:
             for category in self.category_repository.list_categories()
         }
 
-        if not input.categories.issubset(existing_category_ids):
+        input_categories_set = set(input.categories)
+
+        if not input_categories_set.issubset(existing_category_ids):
             raise RelatedCategoriesNotFound(
-                f"Categories not found: {input.categories - existing_category_ids}"
+                f"Categories not found: {input_categories_set - existing_category_ids}"
             )
 
         try:

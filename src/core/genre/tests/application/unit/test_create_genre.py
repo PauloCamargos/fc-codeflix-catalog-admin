@@ -88,7 +88,7 @@ class TestCreateGenre:
             use_case.execute(
                 CreateGenre.Input(
                     name="",
-                    categories={documentary_category.id, movie_category.id},
+                    categories=[documentary_category.id, movie_category.id],
                 )
             )
 

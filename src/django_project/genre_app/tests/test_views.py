@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID, uuid4
 
 import pytest
@@ -64,6 +65,7 @@ def persisted_drama_genre_without_categories(
     genre_repository.save(genre=drama_genre)
     return drama_genre
 
+
 @pytest.mark.django_db
 class TestListAPI:
     @pytest.mark.parametrize(
@@ -78,7 +80,7 @@ class TestListAPI:
         presisted_romance_genre_with_categories: Genre,
         persisted_drama_genre_without_categories: Genre,
     ):
-        expected_persisted_genres = [
+        expected_persisted_genres: list[dict[str, Any]] = [
             {
                 "id": str(persisted_drama_genre_without_categories.id),
                 "name": persisted_drama_genre_without_categories.name,
@@ -159,7 +161,7 @@ class TestCreateAPI:
 
         assert created_genre.name == post_data["name"]
         assert created_genre.is_active == post_data["is_active"]
-        assert created_genre.categories == {movie_category.id}
+        assert created_genre.categories == [movie_category.id]
 
     def test_create_genre_without_categories_success(
         self,
@@ -186,7 +188,7 @@ class TestCreateAPI:
 
         assert created_genre.name == post_data["name"]
         assert created_genre.is_active == post_data["is_active"]
-        assert created_genre.categories == set()
+        assert created_genre.categories == list()
 
     def test_create_genre_invalid_data_error(
         self,
@@ -328,7 +330,7 @@ class TestUpdateAPI:
 
         assert updated_genre.name == post_data["name"]
         assert updated_genre.is_active == post_data["is_active"]
-        assert updated_genre.categories == {serie_category.id}
+        assert updated_genre.categories == [serie_category.id]
 
 
 @pytest.mark.django_db

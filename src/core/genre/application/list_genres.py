@@ -7,7 +7,7 @@ from src.core.genre.gateway.genre_gateway import AbstractGenreRepository
 class GenreOutput:
     id: UUID
     name: str
-    categories: set[UUID]
+    categories: list[UUID]
     is_active: bool
 
 

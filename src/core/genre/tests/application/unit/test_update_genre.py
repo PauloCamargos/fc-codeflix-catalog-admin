@@ -93,7 +93,7 @@ class TestUpdateGenre:
 
         non_existing_category_id = uuid4()
         input = UpdateGenre.Input(
-            id=sci_fi_genre.id, categories={non_existing_category_id}
+            id=sci_fi_genre.id, categories=[non_existing_category_id]
         )
 
         update_genre = UpdateGenre(
@@ -149,7 +149,7 @@ class TestUpdateGenre:
         input = UpdateGenre.Input(
             id=sci_fi_genre.id,
             name="Science Fiction",
-            categories={movie_category.id},
+            categories=[movie_category.id],
             is_active=not sci_fi_genre.is_active,
         )
 

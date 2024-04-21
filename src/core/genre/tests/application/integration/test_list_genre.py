@@ -1,9 +1,6 @@
 import pytest
 
 from src.core.category.domain.category import Category
-from src.core.category.infra.in_memory_category_repository import (
-    InMemoryCategoryRepository,
-)
 from src.core.genre.application.list_genres import ListGenres
 from src.core.genre.domain.genre import Genre
 from src.core.genre.infra.in_memory_genre_repository import InMemoryGenreRepository
@@ -45,9 +42,6 @@ class TestListGenre:
         movie_category: Category,
         documentary_category: Category,
     ) -> None:
-        category_repository = InMemoryCategoryRepository(
-            categories=[movie_category, documentary_category],
-        )
         list_genre = ListGenres(repository=genre_repository)
 
         input = ListGenres.Input()
@@ -61,7 +55,8 @@ class TestListGenre:
         assert romance_genre.id == genre_data.id
         assert romance_genre.name == genre_data.name
         assert romance_genre.is_active == genre_data.is_active
-        assert romance_genre.categories == {
-            category.id
-            for category in category_repository.list_categories()
-        }
+        expected_categories = [
+            movie_category.id,
+            documentary_category.id,
+        ]
+        assert expected_categories == genre_data.categories
