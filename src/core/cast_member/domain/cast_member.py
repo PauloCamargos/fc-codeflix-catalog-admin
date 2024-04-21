@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from src.core.cast_member.domain.errors import InvalidCastMemberTypeError
-from src.core.category.shared.domain.entity import Entity
+from src.core.shared.domain.entity import Entity
 
 MAX_CAST_MEMBER_NAME_NUM_CHARACTERS = 255
 

@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from uuid import UUID
 
-from src.core.category.shared.domain.entity import Entity
+from src.core.shared.domain.entity import Entity
 
 MAX_GENRE_NAME_NUM_CARACTERS = 255
 DEFAULT_GENRE_IS_ACTIVE = True

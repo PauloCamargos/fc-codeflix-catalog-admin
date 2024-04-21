@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from src.core.category.shared.domain.entity import Entity
+from src.core.shared.domain.entity import Entity
 
 MAX_CATEGORY_NAME_NUM_CARACTERS = 255
 DEFAULT_CATEGORY_DESCRIPTION = ""
