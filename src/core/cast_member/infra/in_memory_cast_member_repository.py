@@ -38,7 +38,8 @@ class InMemoryCastMemberRepository(AbstractCastMemberRepository):
             return list(
                 sorted(
                     cast_members,
-                    key=lambda cast_member: getattr(cast_member, order_by)
+                    key=lambda cast_member: getattr(cast_member, order_by.strip("-")),
+                    reverse=order_by.startswith("-")
                 )
             )
 
