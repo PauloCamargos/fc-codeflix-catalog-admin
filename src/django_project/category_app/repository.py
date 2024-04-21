@@ -6,7 +6,7 @@ from src.django_project.category_app.models import Category as CategoryModel
 from src.django_project.shared.repository.mapper import BaseORMMapper
 
 
-class CategoryMapper(BaseORMMapper):
+class CategoryMapper(BaseORMMapper[Category, CategoryModel]):
     @staticmethod
     def to_model(entity: Category, save: bool = False) -> CategoryModel:
         instance = CategoryModel(

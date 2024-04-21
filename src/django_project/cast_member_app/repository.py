@@ -8,7 +8,7 @@ from src.django_project.cast_member_app.models import CastMember as CastMemberMo
 from src.django_project.shared.repository.mapper import BaseORMMapper
 
 
-class CastMemberMapper(BaseORMMapper):
+class CastMemberMapper(BaseORMMapper[CastMember, CastMemberModel]):
     @staticmethod
     def to_model(entity: CastMember, save: bool = False) -> CastMemberModel:
         instance = CastMemberModel(

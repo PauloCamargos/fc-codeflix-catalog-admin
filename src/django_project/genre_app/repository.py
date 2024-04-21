@@ -8,7 +8,7 @@ from src.django_project.genre_app.models import Genre as GenreModel
 from src.django_project.shared.repository.mapper import BaseORMMapper
 
 
-class GenreMapper(BaseORMMapper):
+class GenreMapper(BaseORMMapper[Genre, GenreModel]):
     @staticmethod
     def to_model(entity: Genre, save: bool = False) -> GenreModel:
         instance = GenreModel(
