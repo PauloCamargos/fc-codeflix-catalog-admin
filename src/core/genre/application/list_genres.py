@@ -15,7 +15,7 @@ class ListGenres:
 
     @dataclass
     class Input:
-        pass
+        order_by: str = "name"
 
     @dataclass
     class Output:
@@ -25,7 +25,7 @@ class ListGenres:
         self.repository = repository
 
     def execute(self, input: Input) -> Output:
-        genres = self.repository.list()
+        genres = self.repository.list(order_by=input.order_by)
 
         return ListGenres.Output(
             data=[

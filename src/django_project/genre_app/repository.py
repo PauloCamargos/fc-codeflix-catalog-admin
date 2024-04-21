@@ -54,8 +54,11 @@ class DjangoORMGenreRepository(AbstractGenreRepository):
 
         return GenreMapper.to_entity(genre_model)
 
-    def list(self) -> list[Genre]:
+    def list(self, order_by: str | None = None) -> list[Genre]:
         genre_models = self.genre_model.objects.all()
+
+        if order_by is not None:
+            genre_models.order_by(order_by)
 
         return [
             GenreMapper.to_entity(genre_model)

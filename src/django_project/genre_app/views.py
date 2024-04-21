@@ -26,7 +26,9 @@ from src.django_project.genre_app.serializers import (
 
 class GenreViewSet(viewsets.ViewSet):
     def list(self, request: Request) -> Response:
-        input = ListGenres.Input()
+        order_by = request.query_params.get("order_by", "name")
+
+        input = ListGenres.Input(order_by=order_by)
         use_case = ListGenres(repository=DjangoORMGenreRepository())
 
         output = use_case.execute(input=input)

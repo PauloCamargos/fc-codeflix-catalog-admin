@@ -19,8 +19,18 @@ class InMemoryGenreRepository(AbstractGenreRepository):
         if genre:
             self.genres.remove(genre)
 
-    def list(self) -> list[Genre]:
-        return [genre for genre in self.genres]
+    def list(self, order_by: str | None = None) -> list[Genre]:
+        genres = (genre for genre in self.genres)
+
+        if order_by is not None:
+            return list(
+                sorted(
+                    genres,
+                    key=lambda genre: getattr(genre, order_by)
+                )
+            )
+
+        return list(genres)
 
     def update(self, genre: Genre) -> None:
         old_genre = self.get_by_id(genre.id)
