@@ -1,6 +1,6 @@
 import pytest
 
-from src.core.cast_member.application.list_cast_member import ListCastMember
+from src.core.cast_member.application.list_cast_member import ListCastMembers
 from src.core.cast_member.domain.cast_member import CastMember
 from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
@@ -39,9 +39,9 @@ class TestListCastMember:
         cast_member_repository: AbstractCastMemberRepository,
     ):
 
-        input = ListCastMember.Input()
+        input = ListCastMembers.Input()
 
-        use_case = ListCastMember(repository=cast_member_repository)
+        use_case = ListCastMembers(repository=cast_member_repository)
 
         output = use_case.execute(input=input)
 
@@ -64,9 +64,9 @@ class TestListCastMember:
     ):
         cast_member_repository.save(cast_member=director_cast_member)
 
-        input = ListCastMember.Input(order_by=order_by)
+        input = ListCastMembers.Input(order_by=order_by)
 
-        use_case = ListCastMember(repository=cast_member_repository)
+        use_case = ListCastMembers(repository=cast_member_repository)
 
         output = use_case.execute(input=input)
 
@@ -79,9 +79,9 @@ class TestListCastMember:
             reverse=order_by.startswith("-"),
         )
 
-        expected_output = ListCastMember.Output(
+        expected_output = ListCastMembers.Output(
             data=[
-                ListCastMember.CastMemberOutput(
+                ListCastMembers.CastMemberOutput(
                     id=cast_member.id,
                     name=cast_member.name,
                     type=cast_member.type,
@@ -98,7 +98,7 @@ class TestListCastMember:
         order_by = "potato"
         valid_order_by_attrs = ", ".join(
             repr(attr)
-            for attr in ListCastMember.Input.get_valid_order_by_attributes()
+            for attr in ListCastMembers.Input.get_valid_order_by_attributes()
         )
 
         with pytest.raises(
@@ -108,4 +108,4 @@ class TestListCastMember:
                 f"is not one of: {valid_order_by_attrs}"
             ),
         ):
-            ListCastMember.Input(order_by=order_by)
+            ListCastMembers.Input(order_by=order_by)

@@ -13,7 +13,6 @@ VALID_ORDER_BY_ATTRIBUTES = [
 
 
 class ListGenres:
-
     @dataclass
     class Input(ValidateInputMixin):
         order_by: str = field(default=DEFAULT_GENRE_LIST_ORDER)

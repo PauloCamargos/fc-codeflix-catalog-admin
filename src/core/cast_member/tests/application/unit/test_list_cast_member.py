@@ -4,7 +4,7 @@ import pytest
 
 from src.core.cast_member.application.list_cast_member import (
     DEFAULT_CAST_MEMBER_LIST_ORDER,
-    ListCastMember,
+    ListCastMembers,
 )
 from src.core.cast_member.domain.cast_member import CastMember
 from src.core.cast_member.gateway.cast_member_gateway import (
@@ -30,9 +30,9 @@ class TestListCastMember:
     ):
         mocked_cast_member_repository.list.return_value = [actor_cast_member]
 
-        input = ListCastMember.Input()
+        input = ListCastMembers.Input()
 
-        use_case = ListCastMember(repository=mocked_cast_member_repository)
+        use_case = ListCastMembers(repository=mocked_cast_member_repository)
 
         output = use_case.execute(input=input)
 
