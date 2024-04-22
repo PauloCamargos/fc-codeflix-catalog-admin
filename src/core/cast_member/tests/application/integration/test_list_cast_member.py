@@ -94,11 +94,7 @@ class TestListCastMember:
 
     def test_list_cast_member_invalid_order_by_error(
         self,
-        director_cast_member: CastMember,
-        cast_member_repository: AbstractCastMemberRepository,
     ):
-        cast_member_repository.save(cast_member=director_cast_member)
-
         order_by = "potato"
         valid_order_by_attrs = ", ".join(
             repr(attr)

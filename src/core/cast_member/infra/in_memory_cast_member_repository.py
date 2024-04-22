@@ -39,7 +39,7 @@ class InMemoryCastMemberRepository(AbstractCastMemberRepository):
                 sorted(
                     cast_members,
                     key=lambda cast_member: getattr(cast_member, order_by.strip("-")),
-                    reverse=order_by.startswith("-")
+                    reverse=order_by.startswith("-"),
                 )
             )
 
