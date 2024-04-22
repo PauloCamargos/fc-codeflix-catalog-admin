@@ -33,7 +33,7 @@ def cast_member_repository(
 
 
 class TestListCastMember:
-    def test_list_cast_member_success(
+    def test_list_cast_member_no_order_by_success(
         self,
         actor_cast_member: CastMember,
         cast_member_repository: AbstractCastMemberRepository,
@@ -58,6 +58,7 @@ class TestListCastMember:
     def test_list_cast_member_order_by_success(
         self,
         order_by: str,
+        actor_cast_member: CastMember,
         director_cast_member: CastMember,
         cast_member_repository: AbstractCastMemberRepository,
     ):
@@ -69,6 +70,15 @@ class TestListCastMember:
 
         output = use_case.execute(input=input)
 
+        expected_cast_members = sorted(
+            [
+                director_cast_member,
+                actor_cast_member,
+            ],
+            key=lambda cast_member: cast_member.name,
+            reverse=order_by.startswith("-"),
+        )
+
         expected_output = ListCastMember.Output(
             data=[
                 ListCastMember.CastMemberOutput(
@@ -76,7 +86,7 @@ class TestListCastMember:
                     name=cast_member.name,
                     type=cast_member.type,
                 )
-                for cast_member in cast_member_repository.list(order_by)
+                for cast_member in expected_cast_members
             ]
         )
 
