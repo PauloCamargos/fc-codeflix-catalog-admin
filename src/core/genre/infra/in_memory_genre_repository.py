@@ -40,7 +40,8 @@ class InMemoryGenreRepository(AbstractGenreRepository):
             return list(
                 sorted(
                     genres,
-                    key=lambda genre: getattr(genre, order_by)
+                    key=lambda genre: getattr(genre, order_by.strip("-")),
+                    reverse=order_by.startswith("-"),
                 )
             )
 
