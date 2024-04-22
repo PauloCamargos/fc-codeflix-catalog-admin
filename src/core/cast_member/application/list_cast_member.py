@@ -14,13 +14,6 @@ VALID_ORDER_BY_ATTRIBUTES = [
 ]
 
 
-@dataclass
-class CastMemberOutput:
-    id: UUID
-    name: str
-    type: str
-
-
 class ListCastMember:
     @dataclass
     class Input(ValidateInputMixin):
@@ -32,7 +25,13 @@ class ListCastMember:
 
     @dataclass
     class Output:
-        data: list[CastMemberOutput]
+        data: list["ListCastMember.CastMemberOutput"]
+
+    @dataclass
+    class CastMemberOutput:
+        id: UUID
+        name: str
+        type: str
 
     def __init__(self, repository: AbstractCastMemberRepository):
         self.repository = repository
@@ -42,7 +41,7 @@ class ListCastMember:
 
         return ListCastMember.Output(
             data=[
-                CastMemberOutput(
+                ListCastMember.CastMemberOutput(
                     id=cast_member.id,
                     name=cast_member.name,
                     type=cast_member.type,

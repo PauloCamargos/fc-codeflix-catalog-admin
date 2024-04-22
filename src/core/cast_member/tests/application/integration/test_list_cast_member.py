@@ -1,9 +1,6 @@
 import pytest
 
-from src.core.cast_member.application.list_cast_member import (
-    CastMemberOutput,
-    ListCastMember,
-)
+from src.core.cast_member.application.list_cast_member import ListCastMember
 from src.core.cast_member.domain.cast_member import CastMember
 from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
@@ -74,7 +71,7 @@ class TestListCastMember:
 
         expected_output = ListCastMember.Output(
             data=[
-                CastMemberOutput(
+                ListCastMember.CastMemberOutput(
                     id=cast_member.id,
                     name=cast_member.name,
                     type=cast_member.type,
