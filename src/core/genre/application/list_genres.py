@@ -5,14 +5,6 @@ from src.core.genre.gateway.genre_gateway import AbstractGenreRepository
 DEFAULT_GENRE_LIST_ORDER = "name"
 
 
-@dataclass
-class GenreOutput:
-    id: UUID
-    name: str
-    categories: list[UUID]
-    is_active: bool
-
-
 class ListGenres:
 
     @dataclass
@@ -21,7 +13,14 @@ class ListGenres:
 
     @dataclass
     class Output:
-        data: list[GenreOutput]
+        data: list["ListGenres.GenreOutput"]
+
+    @dataclass
+    class GenreOutput:
+        id: UUID
+        name: str
+        categories: list[UUID]
+        is_active: bool
 
     def __init__(self, repository: AbstractGenreRepository):
         self.repository = repository
@@ -36,7 +35,7 @@ class ListGenres:
 
         return ListGenres.Output(
             data=[
-                GenreOutput(
+                ListGenres.GenreOutput(
                     id=genre.id,
                     name=genre.name,
                     is_active=genre.is_active,
