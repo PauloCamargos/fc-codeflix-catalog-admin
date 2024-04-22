@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import patch
 
 from src.core.category.application.list_categories import ListCategories
 from src.core.category.domain.category import Category
@@ -6,6 +7,7 @@ from src.core.category.infra.in_memory_category_repository import (
     InMemoryCategoryRepository,
 )
 from src.core.shared.application.errors import InvalidOrderByRequested
+from src.core.shared.application import settings as domain_settings
 
 
 @pytest.fixture
@@ -22,6 +24,33 @@ def serie_category() -> Category:
     return Category(
         name="Serie",
         description="Serie category",
+        is_active=True,
+    )
+
+
+@pytest.fixture
+def documentary_category() -> Category:
+    return Category(
+        name="Documentary",
+        description="Documentary category",
+        is_active=True,
+    )
+
+
+@pytest.fixture
+def music_clip_category() -> Category:
+    return Category(
+        name="Music clip",
+        description="Music clip category",
+        is_active=True,
+    )
+
+
+@pytest.fixture
+def lecture_category() -> Category:
+    return Category(
+        name="Lecture",
+        description="Lecture category",
         is_active=True,
     )
 
@@ -121,3 +150,76 @@ class TestListCategoryIntegration:
             ),
         ):
             ListCategories.Input(order_by=order_by)
+
+    @pytest.mark.parametrize(
+        "page",
+        [1, 2, 3],
+    )
+    def test_list_categories_pagination_success(
+        self,
+        page: int,
+        movie_category: Category,
+        serie_category: Category,
+        documentary_category: Category,
+        music_clip_category: Category,
+        lecture_category: Category,
+        category_repository: InMemoryCategoryRepository,
+    ):
+        category_repository.save(category=serie_category)
+        category_repository.save(category=documentary_category)
+        category_repository.save(category=music_clip_category)
+        category_repository.save(category=lecture_category)
+
+        order_by = "-description"
+
+        input = ListCategories.Input(
+            order_by=order_by,
+            page=page,
+        )
+        use_case = ListCategories(repository=category_repository)
+
+        overriden_page_size = 2
+        with patch.dict(
+            domain_settings.REPOSITORY,
+            {"page_size": overriden_page_size},
+        ):
+            output = use_case.execute(input=input)
+
+        expected_output_by_page = {
+            1: [
+                serie_category,
+                music_clip_category,
+            ],
+            2: [
+                movie_category,
+                lecture_category,
+            ],
+            3: [
+                documentary_category,
+            ],
+        }
+
+        expected_output = ListCategories.Output(
+            data=[
+                ListCategories.CategoryOutput(
+                    id=category.id,
+                    name=category.name,
+                    description=category.description,
+                    is_active=category.is_active,
+                )
+                for category in expected_output_by_page[page]
+            ],
+            meta=ListCategories.OutputMeta(
+                page=page,
+                per_page=overriden_page_size,
+                total=len(
+                    [
+                        category
+                        for categories in expected_output_by_page.values()
+                        for category in categories
+                    ]
+                ),
+            )
+        )
+
+        assert expected_output == output

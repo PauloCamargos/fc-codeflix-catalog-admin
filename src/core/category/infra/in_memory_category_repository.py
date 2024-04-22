@@ -3,6 +3,7 @@ from uuid import UUID
 
 from src.core.category.domain.category import Category
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
+from src.core.shared.application import settings as domain_settings
 
 
 class InMemoryCategoryRepository(AbstractCategoryRepository):
@@ -25,22 +26,34 @@ class InMemoryCategoryRepository(AbstractCategoryRepository):
             None,
         )
 
-    def list(self, order_by: str | None = None) -> list[Category]:
+    def list(
+        self,
+        order_by: str | None = None,
+        page: int | None = None,
+    ) -> list[Category]:
         categories = (
             deepcopy(category)
             for category in self.categories
         )
 
         if order_by is not None:
-            return list(
-                sorted(
-                    categories,
-                    key=lambda category: getattr(category, order_by.strip("-")),
-                    reverse=order_by.startswith("-"),
-                )
+            categories = sorted(
+                categories,
+                key=lambda category: getattr(category, order_by.strip("-")),
+                reverse=order_by.startswith("-"),
             )
 
-        return list(self.categories)
+        if page is not None:
+            page_size = domain_settings.REPOSITORY["page_size"]
+            page_offset = (page - 1) * page_size
+            categories = (
+                categories[page_offset:page_offset + page_size]
+            )
+
+        return list(categories)
+
+    def count(self) -> int:
+        return len(self.categories)
 
     def delete(self, id: UUID) -> None:
         category = self.get_by_id(id)
