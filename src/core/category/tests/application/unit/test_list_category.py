@@ -1,8 +1,8 @@
 from unittest.mock import call, create_autospec
+
 from src.core.category.application.list_categories import (
     DEFAULT_CATEGORY_LIST_ORDER,
     ListCategories,
-    ListCategoryInput,
 )
 from src.core.category.domain.category import Category
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
@@ -16,7 +16,7 @@ class TestListCategoryIntegration:
 
         list_categories = ListCategories(repository=repository)
 
-        input = ListCategoryInput()
+        input = ListCategories.Input()
         list_categories_output = list_categories.execute(input=input)
 
         assert repository.list.call_args_list == [
@@ -41,7 +41,7 @@ class TestListCategoryIntegration:
 
         list_categories = ListCategories(repository=repository)
 
-        input = ListCategoryInput()
+        input = ListCategories.Input()
         list_categories_output = list_categories.execute(input=input)
 
         assert repository.list.call_args_list == [

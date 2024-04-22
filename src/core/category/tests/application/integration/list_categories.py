@@ -1,7 +1,4 @@
-from src.core.category.application.list_categories import (
-    ListCategories,
-    ListCategoryInput,
-)
+from src.core.category.application.list_categories import ListCategories
 from src.core.category.domain.category import Category
 from src.core.category.infra.in_memory_category_repository import (
     InMemoryCategoryRepository,
@@ -14,7 +11,7 @@ class TestListCategoryIntegration:
 
         list_categories = ListCategories(repository=repository)
 
-        input = ListCategoryInput()
+        input = ListCategories.Input()
         list_categories_output = list_categories.execute(input=input)
 
         assert len(list_categories_output.data) == 0
@@ -36,7 +33,7 @@ class TestListCategoryIntegration:
 
         list_categories = ListCategories(repository=repository)
 
-        input = ListCategoryInput()
+        input = ListCategories.Input()
         list_categories_output = list_categories.execute(input=input)
 
         assert len(list_categories_output.data) == 2

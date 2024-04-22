@@ -13,10 +13,7 @@ from src.core.category.application.delete_category import (
 )
 from src.core.category.application.errors import CategoryNotFound, InvalidCategoryData
 from src.core.category.application.get_category import GetCategory, GetCategoryInput
-from src.core.category.application.list_categories import (
-    ListCategories,
-    ListCategoryInput,
-)
+from src.core.category.application.list_categories import ListCategories
 from src.core.category.application.update_category import (
     UpdateCategory,
     UpdateCategoryInput,
@@ -37,9 +34,9 @@ from src.django_project.category_app.serializers import (
 class CategoryViewSet(viewsets.ViewSet):
     def list(self, request: Request) -> Response:
         if "order_by" in request.query_params:
-            input = ListCategoryInput(order_by=request.query_params["order_by"])
+            input = ListCategories.Input(order_by=request.query_params["order_by"])
         else:
-            input = ListCategoryInput()
+            input = ListCategories.Input()
 
         use_case = ListCategories(repository=DjangoORMCategoryRepository())
 

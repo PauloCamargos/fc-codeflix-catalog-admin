@@ -5,29 +5,26 @@ from src.core.category.gateway.category_gateway import AbstractCategoryRepositor
 DEFAULT_CATEGORY_LIST_ORDER = "name"
 
 
-@dataclass
-class CategoryOutput:
-    id: UUID
-    name: str
-    description: str
-    is_active: bool
-
-
-@dataclass
-class ListCategoryInput:
-    order_by: str | None = None
-
-
-@dataclass
-class ListCategoryOutput:
-    data: list[CategoryOutput]
-
-
 class ListCategories:
+    @dataclass
+    class Input:
+        order_by: str | None = None
+
+    @dataclass
+    class Output:
+        data: list["ListCategories.CategoryOutput"]
+
+    @dataclass
+    class CategoryOutput:
+        id: UUID
+        name: str
+        description: str
+        is_active: bool
+
     def __init__(self, repository: AbstractCategoryRepository):
         self.repository = repository
 
-    def execute(self, input: ListCategoryInput) -> ListCategoryOutput:
+    def execute(self, input: Input) -> Output:
         if input.order_by is None:
             order_by = DEFAULT_CATEGORY_LIST_ORDER
         else:
@@ -35,9 +32,9 @@ class ListCategories:
 
         categories = self.repository.list(order_by=order_by)
 
-        return ListCategoryOutput(
+        return ListCategories.Output(
             data=[
-                CategoryOutput(
+                ListCategories.CategoryOutput(
                     id=category.id,
                     name=category.name,
                     description=category.description,
