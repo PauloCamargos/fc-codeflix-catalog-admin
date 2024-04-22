@@ -27,6 +27,7 @@ def romance_genre(
         categories=[movie_category.id, documentary_category.id],
     )
 
+
 @pytest.fixture
 def drama_genre(
     movie_category: Category,
@@ -112,7 +113,6 @@ class TestListGenre:
         )
 
         assert expected_output == output
-
 
     def test_list_genre_invalid_order_by_error(
         self,

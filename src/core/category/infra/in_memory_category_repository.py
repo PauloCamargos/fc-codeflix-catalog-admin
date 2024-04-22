@@ -1,6 +1,6 @@
+from copy import deepcopy
 from uuid import UUID
 
-from copy import deepcopy
 from src.core.category.domain.category import Category
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 
@@ -35,7 +35,8 @@ class InMemoryCategoryRepository(AbstractCategoryRepository):
             return list(
                 sorted(
                     categories,
-                    key=lambda category: getattr(category, order_by)
+                    key=lambda category: getattr(category, order_by.strip("-")),
+                    reverse=order_by.startswith("-"),
                 )
             )
 
