@@ -33,10 +33,13 @@ from src.django_project.category_app.serializers import (
 
 class CategoryViewSet(viewsets.ViewSet):
     def list(self, request: Request) -> Response:
+        input_params = {}
         if "order_by" in request.query_params:
-            input = ListCategories.Input(order_by=request.query_params["order_by"])
-        else:
-            input = ListCategories.Input()
+            input_params["order_by"] = request.query_params["order_by"]
+        if "page" in request.query_params:
+            input_params["page"] = int(request.query_params["page"])
+
+        input = ListCategories.Input(**input_params)
 
         use_case = ListCategories(repository=DjangoORMCategoryRepository())
 

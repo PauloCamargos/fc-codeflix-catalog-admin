@@ -1,7 +1,11 @@
 from uuid import UUID
 
+from django.core.paginator import Paginator
+from django.db.models.query import QuerySet
+
 from src.core.category.domain.category import Category
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
+from src.core.shared import settings as core_settings
 from src.django_project.category_app.models import Category as CategoryModel
 from src.django_project.shared.repository.mapper import BaseORMMapper
 
@@ -28,10 +32,13 @@ class CategoryMapper(BaseORMMapper[Category, CategoryModel]):
             is_active=model.is_active,
         )
 
-
 class DjangoORMCategoryRepository(AbstractCategoryRepository):
     def __init__(self, category_model: type[CategoryModel] = CategoryModel):
         self.category_model = category_model
+        self._count: int | None = None
+    
+    def get_queryset(self) -> QuerySet:
+        return self.category_model.objects.all()
 
     def save(self, category: Category) -> None:
         CategoryMapper.to_model(category, save=True)
@@ -44,23 +51,44 @@ class DjangoORMCategoryRepository(AbstractCategoryRepository):
 
         return CategoryMapper.to_entity(found_category)
 
-    def list(self, order_by: str | None = None) -> list[Category]:
-        queryset = self.category_model.objects.all()
+    def list(
+        self,
+        order_by: str | None = None,
+        page: int | None = None,
+    ) -> list[Category]:
+        queryset = self.get_queryset()
 
         if order_by is not None:
             queryset = queryset.order_by(order_by)
+        
+        if page is not None:
+            paginator = Paginator(queryset, core_settings.REPOSITORY["page_size"])
+            paginator_page = paginator.page(page)
+            categories = paginator_page.object_list
+            self._count = paginator.count
+        else:
+            categories = list(queryset)
 
         return [
             CategoryMapper.to_entity(category)
-            for category in queryset
+            for category in categories
         ]
+    
+    def count(
+        self,
+    ) -> int:
+        if self._count is None:
+            self._count = self.get_queryset().count()
+        return self._count
 
     def delete(self, id: UUID) -> None:
-        self.category_model.objects.filter(id=id).delete()
+        self.get_queryset().filter(id=id).delete()
+        self._count = None
 
     def update(self, category: Category) -> None:
         (
-            self.category_model.objects.filter(
+            self.get_queryset()
+            .filter(
                 id=category.id,
             ).update(
                 name=category.name,
