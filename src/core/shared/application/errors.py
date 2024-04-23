@@ -17,3 +17,18 @@ class InvalidOrderByRequested(Exception):
             valid_order_by_attributes=valid_order_by_elements_str,
         )
         super().__init__(message)
+
+
+class InvalidPageRequested(Exception):
+    message_template = (
+        "Provided page {page} is not valid"
+    )
+
+    def __init__(
+        self,
+        page: int,
+    ) -> None:
+        message = self.message_template.format(
+            page=repr(page),
+        )
+        super().__init__(message)
