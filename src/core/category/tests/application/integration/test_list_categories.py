@@ -7,7 +7,7 @@ from src.core.category.infra.in_memory_category_repository import (
     InMemoryCategoryRepository,
 )
 from src.core.shared.application.errors import InvalidOrderByRequested
-from src.core.shared.application import settings as domain_settings
+from src.core.shared import settings as core_settings
 
 
 @pytest.fixture
@@ -180,7 +180,7 @@ class TestListCategoryIntegration:
 
         overriden_page_size = 2
         with patch.dict(
-            domain_settings.REPOSITORY,
+            core_settings.REPOSITORY,
             {"page_size": overriden_page_size},
         ):
             output = use_case.execute(input=input)

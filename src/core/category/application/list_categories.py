@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from uuid import UUID
 
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
-from src.core.shared.application import settings as domain_settings
+from src.core.shared import settings as core_settings
 from src.core.shared.application.input import ListInputMixin
 
 DEFAULT_CATEGORY_LIST_ORDER = "name"
@@ -65,7 +65,7 @@ class ListCategories:
 
         meta = ListCategories.OutputMeta(
             page=input.page,
-            per_page=domain_settings.REPOSITORY["page_size"],
+            per_page=core_settings.REPOSITORY["page_size"],
             total=total,
         )
 

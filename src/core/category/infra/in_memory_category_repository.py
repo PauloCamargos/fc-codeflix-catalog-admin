@@ -3,7 +3,7 @@ from uuid import UUID
 
 from src.core.category.domain.category import Category
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
-from src.core.shared.application import settings as domain_settings
+from src.core.shared import settings as core_settings
 
 
 class InMemoryCategoryRepository(AbstractCategoryRepository):
@@ -44,7 +44,7 @@ class InMemoryCategoryRepository(AbstractCategoryRepository):
             )
 
         if page is not None:
-            page_size = domain_settings.REPOSITORY["page_size"]
+            page_size = core_settings.REPOSITORY["page_size"]
             page_offset = (page - 1) * page_size
             categories = (
                 categories[page_offset:page_offset + page_size]
