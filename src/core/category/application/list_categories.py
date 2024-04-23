@@ -3,7 +3,7 @@ from uuid import UUID
 
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 from src.core.shared.application import settings as domain_settings
-from src.core.shared.application.input import ValidateInputMixin
+from src.core.shared.application.input import ListInputMixin
 
 DEFAULT_CATEGORY_LIST_ORDER = "name"
 
@@ -17,7 +17,7 @@ VALID_ORDER_BY_ATTRIBUTES = [
 
 class ListCategories:
     @dataclass
-    class Input(ValidateInputMixin):
+    class Input(ListInputMixin):
         order_by: str = field(default=DEFAULT_CATEGORY_LIST_ORDER)
         page: int = field(default=1)
 

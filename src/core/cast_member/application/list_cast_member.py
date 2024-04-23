@@ -4,7 +4,7 @@ from uuid import UUID
 from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
 )
-from src.core.shared.application.input import ValidateInputMixin
+from src.core.shared.application.input import ListInputMixin
 
 DEFAULT_CAST_MEMBER_LIST_ORDER = "name"
 
@@ -16,7 +16,7 @@ VALID_ORDER_BY_ATTRIBUTES = [
 
 class ListCastMembers:
     @dataclass
-    class Input(ValidateInputMixin):
+    class Input(ListInputMixin):
         order_by: str = field(default=DEFAULT_CAST_MEMBER_LIST_ORDER)
 
         @staticmethod
