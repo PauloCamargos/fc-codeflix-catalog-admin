@@ -32,11 +32,12 @@ class CategoryMapper(BaseORMMapper[Category, CategoryModel]):
             is_active=model.is_active,
         )
 
+
 class DjangoORMCategoryRepository(AbstractCategoryRepository):
     def __init__(self, category_model: type[CategoryModel] = CategoryModel):
         self.category_model = category_model
         self._count: int | None = None
-    
+
     def get_queryset(self) -> QuerySet:
         return self.category_model.objects.all()
 
@@ -60,7 +61,7 @@ class DjangoORMCategoryRepository(AbstractCategoryRepository):
 
         if order_by is not None:
             queryset = queryset.order_by(order_by)
-        
+
         if page is not None:
             paginator = Paginator(queryset, core_settings.REPOSITORY["page_size"])
             paginator_page = paginator.page(page)
@@ -73,7 +74,7 @@ class DjangoORMCategoryRepository(AbstractCategoryRepository):
             CategoryMapper.to_entity(category)
             for category in categories
         ]
-    
+
     def count(
         self,
     ) -> int:

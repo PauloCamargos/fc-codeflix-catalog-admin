@@ -16,6 +16,7 @@ class ListGenres:
     @dataclass
     class Input(ListInputMixin):
         order_by: str = field(default=DEFAULT_GENRE_LIST_ORDER)
+        page: int = field(default=1)
 
         @staticmethod
         def get_valid_order_by_attributes() -> list[str]:

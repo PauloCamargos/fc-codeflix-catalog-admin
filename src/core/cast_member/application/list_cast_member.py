@@ -18,6 +18,7 @@ class ListCastMembers:
     @dataclass
     class Input(ListInputMixin):
         order_by: str = field(default=DEFAULT_CAST_MEMBER_LIST_ORDER)
+        page: int = field(default=1)
 
         @staticmethod
         def get_valid_order_by_attributes() -> list[str]:

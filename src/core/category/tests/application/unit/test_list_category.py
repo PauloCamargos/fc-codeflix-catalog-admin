@@ -20,7 +20,10 @@ class TestListCategoryIntegration:
         list_categories_output = list_categories.execute(input=input)
 
         assert repository.list.call_args_list == [
-            call(order_by=DEFAULT_CATEGORY_LIST_ORDER),
+            call(
+                order_by=DEFAULT_CATEGORY_LIST_ORDER,
+                page=1,
+            ),
         ]
 
         assert len(list_categories_output.data) == 0
@@ -45,7 +48,10 @@ class TestListCategoryIntegration:
         list_categories_output = list_categories.execute(input=input)
 
         assert repository.list.call_args_list == [
-            call(order_by=DEFAULT_CATEGORY_LIST_ORDER),
+            call(
+                order_by=DEFAULT_CATEGORY_LIST_ORDER,
+                page=1,
+            ),
         ]
 
         assert len(list_categories_output.data) == 2

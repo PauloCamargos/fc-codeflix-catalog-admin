@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
-from src.core.shared.application.errors import InvalidOrderByRequested, InvalidPageRequested
+from src.core.shared.application.errors import (
+    InvalidOrderByRequested,
+    InvalidPageRequested,
+)
 
 
 @dataclass(kw_only=True)

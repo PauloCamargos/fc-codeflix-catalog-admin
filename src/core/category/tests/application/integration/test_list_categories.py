@@ -130,7 +130,12 @@ class TestListCategoryIntegration:
                     is_active=category.is_active,
                 )
                 for category in expected_categories
-            ]
+            ],
+            meta=ListCategories.OutputMeta(
+                page=1,
+                per_page=core_settings.REPOSITORY["page_size"],
+                total=len(expected_categories),
+            )
         )
 
         assert expected_output == output

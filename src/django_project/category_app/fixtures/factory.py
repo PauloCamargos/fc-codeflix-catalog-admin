@@ -17,6 +17,7 @@ def make_category() -> Category:
         )
     return _make_category
 
+
 @pytest.fixture
 def movie_category(
     make_category,
