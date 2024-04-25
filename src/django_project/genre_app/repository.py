@@ -88,7 +88,7 @@ class DjangoORMGenreRepository(AbstractGenreRepository):
             )
             genre_model.categories.set(genre.categories)
 
-    def _get_categories_prefetch(self) -> Prefetch:
+    def _get_categories_prefetch(self, to_attr: str | None = None) -> Prefetch:
         return Prefetch(
             "categories",
             queryset=(
@@ -96,4 +96,5 @@ class DjangoORMGenreRepository(AbstractGenreRepository):
                 .order_by("name")
                 .only("id")
             ),
+            to_attr=to_attr,
         )

@@ -7,63 +7,11 @@ from rest_framework.test import APIClient
 
 from src.core.category.domain.category import Category
 from src.core.genre.application.list_genres import DEFAULT_GENRE_LIST_ORDER
-from src.core.genre.domain.genre import Genre
 from src.django_project.category_app.repository import DjangoORMCategoryRepository
+from src.django_project.genre_app.models import Genre as GenreModel
 from src.django_project.genre_app.repository import DjangoORMGenreRepository
 
 BASE_GENRE_URL = "/api/genres/"
-
-
-@pytest.fixture
-def movie_category() -> Category:
-    return Category(name="Movie")
-
-
-@pytest.fixture
-def documentary_category() -> Category:
-    return Category(name="Category")
-
-
-@pytest.fixture
-def category_repository() -> DjangoORMCategoryRepository:
-    return DjangoORMCategoryRepository()
-
-
-@pytest.fixture
-def genre_repository() -> DjangoORMGenreRepository:
-    return DjangoORMGenreRepository()
-
-
-@pytest.fixture
-def presisted_romance_genre_with_categories(
-    movie_category: Category,
-    documentary_category: Category,
-    category_repository: DjangoORMCategoryRepository,
-    genre_repository: DjangoORMGenreRepository,
-) -> Genre:
-    category_repository.save(category=movie_category)
-    category_repository.save(category=documentary_category)
-
-    romance_genre = Genre(
-        name="Romance",
-        categories=[
-            documentary_category.id,
-            movie_category.id,
-        ],
-    )
-
-    genre_repository.save(genre=romance_genre)
-
-    return romance_genre
-
-
-@pytest.fixture
-def persisted_drama_genre_without_categories(
-    genre_repository: DjangoORMGenreRepository,
-) -> Genre:
-    drama_genre = Genre(name="Drama")
-    genre_repository.save(genre=drama_genre)
-    return drama_genre
 
 
 @pytest.mark.django_db
@@ -75,25 +23,23 @@ class TestListAPI:
     def test_list_genres_and_categories_success(
         self,
         order_by: str,
-        documentary_category: Category,
-        movie_category: Category,
-        presisted_romance_genre_with_categories: Genre,
-        persisted_drama_genre_without_categories: Genre,
+        romance_genre_model_with_categories: GenreModel,
+        drama_genre_model_without_categories: GenreModel,
     ):
         expected_genres: list[dict[str, Any]] = [
             {
-                "id": str(persisted_drama_genre_without_categories.id),
-                "name": persisted_drama_genre_without_categories.name,
-                "is_active": persisted_drama_genre_without_categories.is_active,
+                "id": str(drama_genre_model_without_categories.id),
+                "name": drama_genre_model_without_categories.name,
+                "is_active": drama_genre_model_without_categories.is_active,
                 "categories": [],
             },
             {
-                "id": str(presisted_romance_genre_with_categories.id),
-                "name": presisted_romance_genre_with_categories.name,
-                "is_active": presisted_romance_genre_with_categories.is_active,
+                "id": str(romance_genre_model_with_categories.id),
+                "name": romance_genre_model_with_categories.name,
+                "is_active": romance_genre_model_with_categories.is_active,
                 "categories": [
-                    str(documentary_category.id),
-                    str(movie_category.id),
+                    str(category.id)
+                    for category in romance_genre_model_with_categories.categories.all()
                 ],
             },
         ]
@@ -232,14 +178,13 @@ class TestCreateAPI:
 class TestUpdateAPI:
     def test_update_genre_invalid_payload_error(
         self,
-        persisted_drama_genre_without_categories: Genre,
+        drama_genre_model_without_categories: GenreModel,
     ):
-
         post_data = {
             "name": "",
         }
 
-        url = BASE_GENRE_URL + f"{str(persisted_drama_genre_without_categories.id)}/"
+        url = BASE_GENRE_URL + f"{str(drama_genre_model_without_categories.id)}/"
         response = APIClient().put(url, data=post_data)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -251,12 +196,11 @@ class TestUpdateAPI:
 
     def test_update_category_invalid_id_error(
         self,
-        persisted_drama_genre_without_categories: Genre,
+        drama_genre_model_without_categories: GenreModel,
     ):
-
         post_data = {
-            "name": persisted_drama_genre_without_categories.name,
-            "is_active": not persisted_drama_genre_without_categories.is_active,
+            "name": drama_genre_model_without_categories.name,
+            "is_active": not drama_genre_model_without_categories.is_active,
         }
 
         url = BASE_GENRE_URL + "invalid-id/"
@@ -284,16 +228,16 @@ class TestUpdateAPI:
 
     def test_update_genre_non_existing_categories_error(
         self,
-        persisted_drama_genre_without_categories: Genre,
+        drama_genre_model_without_categories: GenreModel,
     ):
         inexisting_category_ids = {uuid4()}
         post_data = {
-            "name": persisted_drama_genre_without_categories.name,
-            "is_active": persisted_drama_genre_without_categories.is_active,
+            "name": drama_genre_model_without_categories.name,
+            "is_active": drama_genre_model_without_categories.is_active,
             "categories": [str(id) for id in inexisting_category_ids],
         }
 
-        url = BASE_GENRE_URL + f"{str(persisted_drama_genre_without_categories.id)}/"
+        url = BASE_GENRE_URL + f"{str(drama_genre_model_without_categories.id)}/"
         response = APIClient().put(url, data=post_data)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -303,7 +247,7 @@ class TestUpdateAPI:
 
     def test_update_genre_valid_payload_success(
         self,
-        persisted_drama_genre_without_categories: Genre,
+        drama_genre_model_without_categories: GenreModel,
         genre_repository: DjangoORMGenreRepository,
         category_repository: DjangoORMCategoryRepository,
     ):
@@ -312,15 +256,15 @@ class TestUpdateAPI:
 
         post_data = {
             "name": "New Drama",
-            "is_active": not persisted_drama_genre_without_categories.is_active,
+            "is_active": not drama_genre_model_without_categories.is_active,
             "categories": [str(serie_category.id)]
         }
 
-        url = BASE_GENRE_URL + f"{str(persisted_drama_genre_without_categories.id)}/"
+        url = BASE_GENRE_URL + f"{str(drama_genre_model_without_categories.id)}/"
         response = APIClient().put(url, data=post_data)
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        assert response.data["id"] == str(persisted_drama_genre_without_categories.id)
+        assert response.data["id"] == str(drama_genre_model_without_categories.id)
 
         updated_genre = genre_repository.get_by_id(
             id=UUID(response.data["id"])
@@ -337,16 +281,16 @@ class TestUpdateAPI:
 class TestDeleteGenre:
     def test_delete_genre_success(
         self,
-        presisted_romance_genre_with_categories: Genre,
+        romance_genre_model_with_categories: GenreModel,
         genre_repository: DjangoORMGenreRepository,
     ):
-        url = BASE_GENRE_URL + f"{str(presisted_romance_genre_with_categories.id)}/"
+        url = BASE_GENRE_URL + f"{str(romance_genre_model_with_categories.id)}/"
         response = APIClient().delete(path=url)
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
         found_genre = genre_repository.get_by_id(
-            id=presisted_romance_genre_with_categories.id
+            id=romance_genre_model_with_categories.id
         )
         assert found_genre is None
 
