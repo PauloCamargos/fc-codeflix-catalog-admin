@@ -1,24 +1,22 @@
 
-
 import pytest
+
 from src.core.category.domain.category import Category
 from src.django_project.category_app.repository import DjangoORMCategoryRepository
 
 
 @pytest.mark.django_db
 class TestSaveDjangoORMCategoryRepository:
-    def test_can_save_entity_category(self):
-        repository = DjangoORMCategoryRepository()
+    def test_can_save_entity_category(
+        self,
+        category_repository: DjangoORMCategoryRepository,
+        movie_category: Category,
+    ):
+        category_repository.save(category=movie_category)
 
-        category = Category(
-            name="Movie",
-            description="Movie description",
-            is_active=True,
+        found_category = category_repository.category_model.objects.get(
+            id=movie_category.id,
         )
-
-        repository.save(category=category)
-
-        found_category = repository.category_model.objects.get(id=category.id)
         saved_category = Category(
             id=found_category.id,
             name=found_category.name,
@@ -26,26 +24,20 @@ class TestSaveDjangoORMCategoryRepository:
             is_active=found_category.is_active,
         )
 
-        assert category == saved_category
-        assert saved_category.id == category.id
-        assert saved_category.name == category.name
-        assert saved_category.description == category.description
-        assert saved_category.is_active == category.is_active
+        assert saved_category == movie_category
+        assert saved_category.id == movie_category.id
+        assert saved_category.name == movie_category.name
+        assert saved_category.description == movie_category.description
+        assert saved_category.is_active == movie_category.is_active
 
 
 @pytest.mark.django_db
 class TestGetByIdDjangoORMCategoryRepository:
-    def test_can_get_by_id_category(self):
-        movie_category = Category(
-            name="Movie",
-            description="Movie description",
-            is_active=True,
-        )
-        serie_category = Category(
-            name="Series",
-            description="Serie description",
-            is_active=True,
-        )
+    def test_can_get_by_id_category(
+        self,
+        movie_category: Category,
+        serie_category: Category,
+    ):
         categories = [
             movie_category,
             serie_category,
@@ -78,17 +70,11 @@ class TestCanListCategoriesRepository:
 
         assert len(found_categories) == 0
 
-    def test_can_list_category(self):
-        movie_category = Category(
-            name="Movie",
-            description="Movie description",
-            is_active=True,
-        )
-        serie_category = Category(
-            name="Series",
-            description="Serie description",
-            is_active=True,
-        )
+    def test_can_list_category(
+        self,
+        movie_category: Category,
+        serie_category: Category,
+    ):
         categories = [
             movie_category,
             serie_category,
@@ -115,17 +101,11 @@ class TestCanListCategoriesRepository:
 
 @pytest.mark.django_db
 class TestDeleteDjangoORMCategoryRepository:
-    def test_can_delete_category(self):
-        movie_category = Category(
-            name="Movie",
-            description="Movie description",
-            is_active=True,
-        )
-        serie_category = Category(
-            name="Series",
-            description="Serie description",
-            is_active=True,
-        )
+    def test_can_delete_category(
+        self,
+        movie_category: Category,
+        serie_category: Category,
+    ):
         categories = [
             movie_category,
             serie_category,
@@ -154,29 +134,28 @@ class TestDeleteDjangoORMCategoryRepository:
 
 @pytest.mark.django_db
 class TestUpdateDjangoORMCategoryRepository:
-    def test_can_update_entity_category(self):
-        category = Category(
-            name="Movie",
-            description="Movie description",
-            is_active=True,
-        )
-
+    def test_can_update_entity_category(
+        self,
+        movie_category: Category,
+    ):
         repository = DjangoORMCategoryRepository()
 
-        repository.save(category)
+        repository.save(movie_category)
 
         updated_category_name = "Serie"
-        category.update_category(
+        movie_category.update_category(
             name=updated_category_name,
-            description=category.description,
+            description=movie_category.description,
         )
-        repository.update(category=category)
+        repository.update(category=movie_category)
 
         assert len(repository.list()) == 1
 
-        updated_category = repository.get_by_id(id=category.id)
+        updated_category = repository.get_by_id(id=movie_category.id)
 
-        assert updated_category.id == category.id
+        assert updated_category is not None
+
+        assert updated_category.id == movie_category.id
         assert updated_category.name == updated_category_name
-        assert updated_category.description == category.description
-        assert updated_category.is_active == category.is_active
+        assert updated_category.description == movie_category.description
+        assert updated_category.is_active == movie_category.is_active

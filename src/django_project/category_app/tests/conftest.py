@@ -15,23 +15,8 @@ def category_repository() -> DjangoORMCategoryRepository:
 # CATEGORY MODEL                #
 # ----------------------------- #
 @pytest.fixture
-def make_category_model() -> CategoryModel:
-    def _make_category_model(
-        name: str,
-        description: str,
-        is_active: bool,
-    ) -> CategoryModel:
-        return CategoryModel.objects.create(
-            name=name,
-            description=description,
-            is_active=is_active,
-        )
-    return _make_category_model
-
-
-@pytest.fixture
-def movie_category_model(make_category_model) -> CategoryModel:
-    return make_category_model(
+def movie_category_model() -> CategoryModel:
+    return CategoryModel.objects.create(
         name="Movie",
         description="Movie category",
         is_active=True,
@@ -39,8 +24,8 @@ def movie_category_model(make_category_model) -> CategoryModel:
 
 
 @pytest.fixture
-def serie_category_model(make_category_model) -> CategoryModel:
-    return make_category_model(
+def serie_category_model() -> CategoryModel:
+    return CategoryModel.objects.create(
         name="Serie",
         description="Serie category",
         is_active=True,
@@ -48,8 +33,8 @@ def serie_category_model(make_category_model) -> CategoryModel:
 
 
 @pytest.fixture
-def documentary_category_model(make_category_model) -> CategoryModel:
-    return make_category_model(
+def documentary_category_model() -> CategoryModel:
+    return CategoryModel.objects.create(
         name="Documentary",
         description="Documentary category",
         is_active=True,
@@ -57,8 +42,8 @@ def documentary_category_model(make_category_model) -> CategoryModel:
 
 
 @pytest.fixture
-def music_clip_category_model(make_category_model) -> CategoryModel:
-    return make_category_model(
+def music_clip_category_model() -> CategoryModel:
+    return CategoryModel.objects.create(
         name="Music clip",
         description="Music clip category",
         is_active=True,
@@ -66,8 +51,8 @@ def music_clip_category_model(make_category_model) -> CategoryModel:
 
 
 @pytest.fixture
-def lecture_category_model(make_category_model) -> CategoryModel:
-    return make_category_model(
+def lecture_category_model() -> CategoryModel:
+    return CategoryModel.objects.create(
         name="Lecture",
         description="Lecture category",
         is_active=True,
@@ -87,7 +72,10 @@ MAKE_CATEGORY_FIXTURE = Callable[
 
 
 @pytest.fixture
-def make_category() -> Category:
+def make_category() -> Callable[
+    [str, str, bool],
+    Category,
+]:
     def _make_category(
         name: str,
         description: str,

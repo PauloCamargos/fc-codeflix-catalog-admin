@@ -31,10 +31,10 @@ class InMemoryCategoryRepository(AbstractCategoryRepository):
         order_by: str | None = None,
         page: int | None = None,
     ) -> list[Category]:
-        categories = (
+        categories = [
             deepcopy(category)
             for category in self.categories
-        )
+        ]
 
         if order_by is not None:
             categories = sorted(
@@ -46,9 +46,7 @@ class InMemoryCategoryRepository(AbstractCategoryRepository):
         if page is not None:
             page_size = core_settings.REPOSITORY["page_size"]
             page_offset = (page - 1) * page_size
-            categories = (
-                categories[page_offset:page_offset + page_size]
-            )
+            categories = categories[page_offset:page_offset + page_size]
 
         return list(categories)
 
