@@ -1,4 +1,3 @@
-
 import pytest
 
 from src.core.category.domain.category import Category
