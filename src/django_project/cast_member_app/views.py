@@ -23,10 +23,13 @@ from src.django_project.cast_member_app.serializers import (
 
 class CastMemberViewSet(viewsets.ViewSet):
     def list(self, request: Request) -> Response:
+        input_params = {}
         if "order_by" in request.query_params:
-            input = ListCastMembers.Input(order_by=request.query_params["order_by"])
-        else:
-            input = ListCastMembers.Input()
+            input_params["order_by"] = request.query_params["order_by"]
+        if "page" in request.query_params:
+            input_params["page"] = int(request.query_params["page"])
+
+        input = ListCastMembers.Input(**input_params)
 
         use_case = ListCastMembers(repository=DjangoORMCastMemberRepository())
 

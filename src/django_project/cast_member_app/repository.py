@@ -1,9 +1,13 @@
 from uuid import UUID
 
+from django.core.paginator import Paginator
+from django.db.models.query import QuerySet
+
 from src.core.cast_member.domain.cast_member import CastMember
 from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
 )
+from src.core.shared import settings as core_settings
 from src.django_project.cast_member_app.models import CastMember as CastMemberModel
 from src.django_project.shared.repository.mapper import BaseORMMapper
 
@@ -33,6 +37,10 @@ class DjangoORMCastMemberRepository(AbstractCastMemberRepository):
 
     def __init__(self, cast_member_model: type[CastMemberModel] = CastMemberModel):
         self.cast_member_model = cast_member_model
+        self._count: int | None = None
+
+    def get_queryset(self) -> QuerySet:
+        return self.cast_member_model.objects.all()
 
     def save(self, cast_member: CastMember) -> None:
         CastMemberMapper.to_model(cast_member, save=True)
@@ -45,19 +53,35 @@ class DjangoORMCastMemberRepository(AbstractCastMemberRepository):
 
         return CastMemberMapper.to_entity(cast_member)
 
-    def list(self, order_by: str | None = None) -> list[CastMember]:
-        queryset = (
-            self.cast_member_model.objects
-            .all()
-        )
+    def list(
+        self,
+        order_by: str | None = None,
+        page: int | None = None,
+    ) -> list[CastMember]:
+        queryset = self.get_queryset()
 
         if order_by is not None:
             queryset = queryset.order_by(order_by)
 
+        if page is not None:
+            paginator = Paginator(queryset, core_settings.REPOSITORY["page_size"])
+            paginator_page = paginator.page(page)
+            cast_members = paginator_page.object_list
+            self._count = paginator.count
+        else:
+            cast_members = list(queryset)
+
         return [
             CastMemberMapper.to_entity(cast_member)
-            for cast_member in queryset
+            for cast_member in cast_members
         ]
+
+    def count(
+        self,
+    ) -> int:
+        if self._count is None:
+            self._count = self.get_queryset().count()
+        return self._count
 
     def delete(self, id: UUID) -> None:
         self.cast_member_model.objects.filter(id=id).delete()

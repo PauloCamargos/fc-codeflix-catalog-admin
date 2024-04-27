@@ -18,6 +18,10 @@ class AbstractCastMemberRepository(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    def count(self) -> int:
+        raise NotImplementedError
+
+    @abstractmethod
     def update(self, cast_member: CastMember) -> None:
         raise NotImplementedError()
 

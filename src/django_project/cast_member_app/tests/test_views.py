@@ -73,6 +73,80 @@ class TestListAPI:
         assert response.status_code == status.HTTP_200_OK
         assert response.data == expected_data
 
+    @pytest.mark.parametrize(
+        "page",
+        [1, 2, 3],
+    )
+    def test_list_categories_with_pagination(
+        self,
+        page: int,
+        movie_category_model: Category,
+        serie_category_model: Category,
+        documentary_category_model: Category,
+        music_clip_category_model: Category,
+        lecture_category_model: Category,
+    ):
+        expected_categories_per_page: dict[int, list[Any]] = {
+            1: [
+                    {
+                        "id": str(serie_category_model.id),
+                        "name": serie_category_model.name,
+                        "description": serie_category_model.description,
+                        "is_active": serie_category_model.is_active,
+                    },
+                    {
+                        "id": str(music_clip_category_model.id),
+                        "name": music_clip_category_model.name,
+                        "description": music_clip_category_model.description,
+                        "is_active": music_clip_category_model.is_active,
+                    },
+            ],
+            2: [
+                    {
+                        "id": str(movie_category_model.id),
+                        "name": movie_category_model.name,
+                        "description": movie_category_model.description,
+                        "is_active": movie_category_model.is_active,
+                    },
+                    {
+                        "id": str(lecture_category_model.id),
+                        "name": lecture_category_model.name,
+                        "description": lecture_category_model.description,
+                        "is_active": lecture_category_model.is_active,
+                    },
+            ],
+            3: [
+                    {
+                        "id": str(documentary_category_model.id),
+                        "name": documentary_category_model.name,
+                        "description": documentary_category_model.description,
+                        "is_active": documentary_category_model.is_active,
+                    },
+            ],
+        }
+
+        params = {
+            "order_by": "-description",
+            "page": page,
+        }
+
+        expected_data = {
+            "data": expected_categories_per_page[page]
+        }
+
+        overriden_page_size = 2
+
+        url = "/api/categories/"
+        with patch.dict(
+            core_settings.REPOSITORY,
+            {"page_size": overriden_page_size},
+        ):
+            response = APIClient().get(url, params)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == expected_data
+
+
 
 @pytest.mark.django_db
 class TestCreateAPI:

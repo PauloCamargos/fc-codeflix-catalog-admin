@@ -4,6 +4,7 @@ from uuid import UUID
 from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
 )
+from src.core.shared import settings as core_settings
 from src.core.shared.application.input import ListInputMixin
 
 DEFAULT_CAST_MEMBER_LIST_ORDER = "name"
@@ -27,6 +28,7 @@ class ListCastMembers:
     @dataclass
     class Output:
         data: list["ListCastMembers.CastMemberOutput"]
+        meta: list["ListCastMembers.OutputMeta"]
 
     @dataclass
     class CastMemberOutput:
@@ -34,19 +36,38 @@ class ListCastMembers:
         name: str
         type: str
 
+    @dataclass
+    class OutputMeta:
+        page: int
+        per_page: int
+        total: int
+
     def __init__(self, repository: AbstractCastMemberRepository):
         self.repository = repository
 
     def execute(self, input: Input) -> Output:
-        cast_members = self.repository.list(order_by=input.order_by)
+        cast_members = self.repository.list(
+            order_by=input.order_by,
+            page=input.page,
+        )
+        total = self.repository.count()
+
+        data = [
+            ListCastMembers.CastMemberOutput(
+                id=cast_member.id,
+                name=cast_member.name,
+                type=cast_member.type,
+            )
+            for cast_member in cast_members
+        ]
+
+        meta = ListCastMembers.OutputMeta(
+            page=input.page,
+            per_page=core_settings.REPOSITORY["page_size"],
+            total=total,
+        )
 
         return ListCastMembers.Output(
-            data=[
-                ListCastMembers.CastMemberOutput(
-                    id=cast_member.id,
-                    name=cast_member.name,
-                    type=cast_member.type,
-                )
-                for cast_member in cast_members
-            ]
+            data=data,
+            meta=meta,
         )
