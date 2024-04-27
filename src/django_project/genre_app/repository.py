@@ -1,13 +1,16 @@
 from uuid import UUID
 
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Prefetch
+from django.db.models.query import QuerySet
 
 from src.core.genre.domain.genre import Genre
 from src.core.genre.gateway.genre_gateway import AbstractGenreRepository
 from src.django_project.category_app.models import Category as CategoryModel
 from src.django_project.genre_app.models import Genre as GenreModel
 from src.django_project.shared.repository.mapper import BaseORMMapper
+from src.core.shared import settings as core_settings
 
 
 class GenreMapper(BaseORMMapper[Genre, GenreModel]):
@@ -39,6 +42,9 @@ class DjangoORMGenreRepository(AbstractGenreRepository):
     def __init__(self, genre_model: type[GenreModel] = GenreModel):
         self.genre_model = genre_model
 
+    def get_queryset(self) -> QuerySet:
+        return self.genre_model.objects.all()
+
     def save(self, genre: Genre) -> None:
         with transaction.atomic():
             genre_model = GenreMapper.to_model(genre, save=True)
@@ -57,20 +63,35 @@ class DjangoORMGenreRepository(AbstractGenreRepository):
 
         return GenreMapper.to_entity(genre_model)
 
-    def list(self, order_by: str | None = None) -> list[Genre]:
-        queryset = (
-            self.genre_model.objects
-            .prefetch_related(self._get_categories_prefetch())
-            .all()
-        )
+    def list(
+        self,
+        order_by: str | None = None,
+        page: int | None = None,
+    ) -> list[Genre]:
+        queryset = self.get_queryset()
 
         if order_by is not None:
             queryset = queryset.order_by(order_by)
 
+        if page is not None:
+            paginator = Paginator(queryset, core_settings.REPOSITORY["page_size"])
+            paginator_page = paginator.page(page)
+            genres = paginator_page.object_list
+            self._count = paginator.count
+        else:
+            genres = list(queryset)
+
         return [
             GenreMapper.to_entity(genre)
-            for genre in queryset
+            for genre in genres
         ]
+
+    def count(
+        self,
+    ) -> int:
+        if self._count is None:
+            self._count = self.get_queryset().count()
+        return self._count
 
     def delete(self, id: UUID) -> None:
         self.genre_model.objects.filter(id=id).delete()

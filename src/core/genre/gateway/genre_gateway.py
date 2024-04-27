@@ -14,7 +14,15 @@ class AbstractGenreRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def list(self, order_by: str | None = None) -> list[Genre]:
+    def list(
+        self,
+        order_by: str | None = None,
+        page: int | None = None,
+    ) -> list[Genre]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def count(self) -> int:
         raise NotImplementedError
 
     @abstractmethod

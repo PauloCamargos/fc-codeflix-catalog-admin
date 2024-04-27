@@ -26,10 +26,13 @@ from src.django_project.genre_app.serializers import (
 
 class GenreViewSet(viewsets.ViewSet):
     def list(self, request: Request) -> Response:
+        input_params = {}
         if "order_by" in request.query_params:
-            input = ListGenres.Input(order_by=request.query_params["order_by"])
-        else:
-            input = ListGenres.Input()
+            input_params["order_by"] = request.query_params["order_by"]
+        if "page" in request.query_params:
+            input_params["page"] = int(request.query_params["page"])
+
+        input = ListGenres.Input(**input_params)
 
         use_case = ListGenres(repository=DjangoORMGenreRepository())
 
