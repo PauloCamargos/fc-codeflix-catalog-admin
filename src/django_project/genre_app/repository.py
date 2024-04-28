@@ -33,7 +33,7 @@ class GenreMapper(BaseORMMapper[Genre, GenreModel]):
             is_active=model.is_active,
             categories=[
                 category.id
-                for category in model.categories.all()
+                for category in model.ordered_categories
             ]
         )
 
@@ -55,7 +55,9 @@ class DjangoORMGenreRepository(AbstractGenreRepository):
             genre_model = (
                 self.genre_model.objects
                 .filter(id=id)
-                .prefetch_related(self._get_categories_prefetch())
+                .prefetch_related(
+                    self._get_categories_prefetch(to_attr="ordered_categories")
+                )
                 .get()
             )
         except self.genre_model.DoesNotExist:
@@ -68,7 +70,12 @@ class DjangoORMGenreRepository(AbstractGenreRepository):
         order_by: str | None = None,
         page: int | None = None,
     ) -> list[Genre]:
-        queryset = self.get_queryset()
+        queryset = (
+            self.get_queryset()
+            .prefetch_related(
+                self._get_categories_prefetch(to_attr="ordered_categories")
+            )
+        )
 
         if order_by is not None:
             queryset = queryset.order_by(order_by)

@@ -62,6 +62,48 @@ def drama_genre_model_without_categories(
     )
 
 
+@pytest.fixture
+def horror_genre_model_without_categories(
+    genre_repository: DjangoORMGenreRepository,
+) -> GenreModel:
+    horror_genre = Genre(name="Horror")
+    genre_repository.save(genre=horror_genre)
+    return (
+        GenreModel.objects
+        .prefetch_related(
+            genre_repository._get_categories_prefetch()
+        ).get(id=horror_genre.id)
+    )
+
+
+@pytest.fixture
+def scifi_genre_model_without_categories(
+    genre_repository: DjangoORMGenreRepository,
+) -> GenreModel:
+    scifi_genre = Genre(name="Scifi")
+    genre_repository.save(genre=scifi_genre)
+    return (
+        GenreModel.objects
+        .prefetch_related(
+            genre_repository._get_categories_prefetch()
+        ).get(id=scifi_genre.id)
+    )
+
+
+@pytest.fixture
+def action_genre_model_without_categories(
+    genre_repository: DjangoORMGenreRepository,
+) -> GenreModel:
+    action_genre = Genre(name="Action")
+    genre_repository.save(genre=action_genre)
+    return (
+        GenreModel.objects
+        .prefetch_related(
+            genre_repository._get_categories_prefetch()
+        ).get(id=action_genre.id)
+    )
+
+
 # ----------------------------------------- #
 # CAST MEMBER DOMAIN ENTITY (non-persisted) #
 # ----------------------------------------- #

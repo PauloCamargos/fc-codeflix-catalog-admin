@@ -1,4 +1,5 @@
 from typing import Any
+from unittest.mock import patch
 from uuid import UUID, uuid4
 
 import pytest
@@ -7,6 +8,7 @@ from rest_framework.test import APIClient
 
 from src.core.category.domain.category import Category
 from src.core.genre.application.list_genres import DEFAULT_GENRE_LIST_ORDER
+from src.core.shared import settings as core_settings
 from src.django_project.category_app.repository import DjangoORMCategoryRepository
 from src.django_project.genre_app.models import Genre as GenreModel
 from src.django_project.genre_app.repository import DjangoORMGenreRepository
@@ -39,7 +41,10 @@ class TestListAPI:
                 "is_active": romance_genre_model_with_categories.is_active,
                 "categories": [
                     str(category.id)
-                    for category in romance_genre_model_with_categories.categories.all()
+                    for category in (
+                        romance_genre_model_with_categories.categories
+                        .order_by("name")
+                    )
                 ],
             },
         ]
@@ -71,6 +76,85 @@ class TestListAPI:
         expected_data = {"data": []}
 
         response = APIClient().get(path=BASE_GENRE_URL)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == expected_data
+
+    @pytest.mark.parametrize(
+        "page",
+        [1, 2, 3],
+    )
+    def test_list_genres_with_pagination(
+        self,
+        page: int,
+        romance_genre_model_with_categories: GenreModel,
+        drama_genre_model_without_categories: GenreModel,
+        horror_genre_model_without_categories: GenreModel,
+        scifi_genre_model_without_categories: GenreModel,
+        action_genre_model_without_categories: GenreModel,
+    ):
+        expected_genres_per_page: dict[int, list[Any]] = {
+            1: [
+                    {
+                        "id": str(scifi_genre_model_without_categories.id),
+                        "name": scifi_genre_model_without_categories.name,
+                        "is_active": scifi_genre_model_without_categories.is_active,
+                        "categories": [],
+                    },
+                    {
+                        "id": str(romance_genre_model_with_categories.id),
+                        "name": romance_genre_model_with_categories.name,
+                        "is_active": romance_genre_model_with_categories.is_active,
+                        "categories": [
+                            str(category.id)
+                            for category in (
+                                romance_genre_model_with_categories.categories
+                                .order_by("name")
+                            )
+                        ],
+                    },
+            ],
+            2: [
+                    {
+                        "id": str(horror_genre_model_without_categories.id),
+                        "name": horror_genre_model_without_categories.name,
+                        "is_active": horror_genre_model_without_categories.is_active,
+                        "categories": [],
+                    },
+                    {
+                        "id": str(drama_genre_model_without_categories.id),
+                        "name": drama_genre_model_without_categories.name,
+                        "is_active": drama_genre_model_without_categories.is_active,
+                        "categories": [],
+                    },
+            ],
+            3: [
+                    {
+                        "id": str(action_genre_model_without_categories.id),
+                        "name": action_genre_model_without_categories.name,
+                        "is_active": action_genre_model_without_categories.is_active,
+                        "categories": [],
+                    },
+            ],
+        }
+
+        params = {
+            "order_by": "-name",
+            "page": page,
+        }
+
+        expected_data = {
+            "data": expected_genres_per_page[page]
+        }
+
+        overriden_page_size = 2
+
+        url = "/api/genres/"
+        with patch.dict(
+            core_settings.REPOSITORY,
+            {"page_size": overriden_page_size},
+        ):
+            response = APIClient().get(url, params)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data == expected_data
