@@ -50,7 +50,7 @@ class TestCanListCategoriesRepository:
 
         repository = InMemoryCategoryRepository(categories=[])
 
-        found_categories = repository.list_categories()
+        found_categories = repository.list()
 
         assert len(found_categories) == 0
 
@@ -73,7 +73,7 @@ class TestCanListCategoriesRepository:
             ]
         )
 
-        found_categories = repository.list_categories()
+        found_categories = repository.list()
 
         assert len(found_categories) == 2
         assert movie_category in found_categories

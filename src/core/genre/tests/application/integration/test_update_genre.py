@@ -26,7 +26,7 @@ def sci_fi_genre(
 ) -> Genre:
     return Genre(
         name="Sci-fi",
-        categories={movie_category.id, documentary_category.id},
+        categories=[movie_category.id, documentary_category.id],
     )
 
 
@@ -54,7 +54,7 @@ class TestUpdateGenre:
         input = UpdateGenre.Input(
             id=sci_fi_genre.id,
             name="Science Fiction",
-            categories={movie_category.id},
+            categories=[movie_category.id],
             is_active=not sci_fi_genre.is_active,
         )
 

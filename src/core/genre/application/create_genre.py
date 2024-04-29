@@ -14,7 +14,7 @@ class CreateGenre:
     @dataclass
     class Input:
         name: str
-        categories: set[UUID] = field(default_factory=set)
+        categories: list[UUID] = field(default_factory=list)
         is_active: bool = True
 
     @dataclass
@@ -32,12 +32,14 @@ class CreateGenre:
     def execute(self, input: Input) -> Output:
         existing_category_ids = {
             category.id
-            for category in self.category_repository.list_categories()
+            for category in self.category_repository.list()
         }
 
-        if not input.categories.issubset(existing_category_ids):
+        input_categories_set = set(input.categories)
+
+        if not input_categories_set.issubset(existing_category_ids):
             raise RelatedCategoriesNotFound(
-                f"Categories not found: {input.categories - existing_category_ids}"
+                f"Categories not found: {input_categories_set - existing_category_ids}"
             )
 
         try:

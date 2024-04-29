@@ -1,13 +1,14 @@
-from uuid import UUID
 import uuid
+from uuid import UUID
 
 import pytest
 
 from src.core.category.domain.category import (
-    Category,
-    MAX_CATEGORY_NAME_NUM_CARACTERS,
+    CATEGORY_DESCRIPTION_MAX_LENGTH,
     DEFAULT_CATEGORY_DESCRIPTION,
     DEFAULT_CATEGORY_IS_ACTIVE,
+    MAX_CATEGORY_NAME_NUM_CARACTERS,
+    Category,
 )
 
 
@@ -53,6 +54,32 @@ class TestCreateCategory:
             category.is_active == DEFAULT_CATEGORY_IS_ACTIVE
         ), "unexpected category.is_active"
         assert category.name == category_name, "unexpected category.name"
+
+    def test_description_must_have_less_than_characters(self):
+        invalid_description = "C" * (CATEGORY_DESCRIPTION_MAX_LENGTH + 1)
+        with pytest.raises(
+            ValueError,
+            match=(
+                "^'description' cannot be longer than "
+                f"{CATEGORY_DESCRIPTION_MAX_LENGTH} characters$"
+            ),
+        ):
+            Category(name="dummy name", description=invalid_description)
+
+    def test_name_and_description_are_invalid(self):
+        invalid_name = "N" * (MAX_CATEGORY_NAME_NUM_CARACTERS + 1)
+        invalid_description = "C" * (CATEGORY_DESCRIPTION_MAX_LENGTH + 1)
+        with pytest.raises(
+            ValueError,
+            match=(
+                "^'name' must have less than "
+                f"{MAX_CATEGORY_NAME_NUM_CARACTERS} characters"
+                + ", "
+                "'description' cannot be longer than "
+                f"{CATEGORY_DESCRIPTION_MAX_LENGTH} characters$"
+            ),
+        ):
+            Category(name=invalid_name, description=invalid_description)
 
 
 class TestUpdateCategory:

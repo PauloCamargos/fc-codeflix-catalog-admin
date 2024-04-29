@@ -13,6 +13,7 @@
         "--exclude=.venv,migrations"
     ],
     "python.testing.pytestArgs": [
+        "-vv",
         "."
     ],
     "python.testing.unittestEnabled": false,
@@ -34,5 +35,6 @@
         "django_app/infra",
         "django_app/models",
         "django_app/views",
+        "shared"
     ],
 }

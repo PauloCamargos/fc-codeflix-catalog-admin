@@ -35,7 +35,7 @@ def sci_fi_genre(
 ) -> Genre:
     return Genre(
         name="Sci-fi",
-        categories={movie_category.id, documentary_category.id},
+        categories=[movie_category.id, documentary_category.id],
     )
 
 
@@ -50,7 +50,7 @@ def mocked_category_repository(
     documentary_category: Category,
 ) -> MagicMock:
     mocked_repository = create_autospec(InMemoryCategoryRepository)
-    mocked_repository.list_categories.return_value = [
+    mocked_repository.list.return_value = [
         movie_category,
         documentary_category,
     ]
@@ -93,7 +93,7 @@ class TestUpdateGenre:
 
         non_existing_category_id = uuid4()
         input = UpdateGenre.Input(
-            id=sci_fi_genre.id, categories={non_existing_category_id}
+            id=sci_fi_genre.id, categories=[non_existing_category_id]
         )
 
         update_genre = UpdateGenre(
@@ -107,7 +107,7 @@ class TestUpdateGenre:
             update_genre.execute(input=input)
 
         mocked_genre_repository.get_by_id.assert_called_with(id=sci_fi_genre.id)
-        mocked_category_repository.list_categories.assert_called_once_with()
+        mocked_category_repository.list.assert_called_once_with()
         mocked_genre_repository.update.assert_not_called()
 
         assert str(non_existing_category_id) in str(exc_info.value)
@@ -149,7 +149,7 @@ class TestUpdateGenre:
         input = UpdateGenre.Input(
             id=sci_fi_genre.id,
             name="Science Fiction",
-            categories={movie_category.id},
+            categories=[movie_category.id],
             is_active=not sci_fi_genre.is_active,
         )
 
@@ -161,7 +161,7 @@ class TestUpdateGenre:
         update_genre.execute(input=input)
 
         mocked_genre_repository.get_by_id.assert_called_with(id=sci_fi_genre.id)
-        mocked_category_repository.list_categories.assert_called_with()
+        mocked_category_repository.list.assert_called_with()
         mocked_genre_repository.update.assert_called_once_with(
             genre=Genre(**asdict(input))
         )

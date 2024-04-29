@@ -1,7 +1,8 @@
 from unittest.mock import call, create_autospec
+
 from src.core.category.application.list_categories import (
+    DEFAULT_CATEGORY_LIST_ORDER,
     ListCategories,
-    ListCategoryInput,
 )
 from src.core.category.domain.category import Category
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
@@ -11,15 +12,18 @@ class TestListCategoryIntegration:
 
     def test_list_categories_empty_success(self) -> None:
         repository = create_autospec(AbstractCategoryRepository)
-        repository.list_categories.return_value = []
+        repository.list.return_value = []
 
         list_categories = ListCategories(repository=repository)
 
-        input = ListCategoryInput()
+        input = ListCategories.Input()
         list_categories_output = list_categories.execute(input=input)
 
-        assert repository.list_categories.call_args_list == [
-            call(),
+        assert repository.list.call_args_list == [
+            call(
+                order_by=DEFAULT_CATEGORY_LIST_ORDER,
+                page=1,
+            ),
         ]
 
         assert len(list_categories_output.data) == 0
@@ -36,15 +40,18 @@ class TestListCategoryIntegration:
             is_active=True,
         )
         repository = create_autospec(AbstractCategoryRepository)
-        repository.list_categories.return_value = [movie_category, serie_category]
+        repository.list.return_value = [movie_category, serie_category]
 
         list_categories = ListCategories(repository=repository)
 
-        input = ListCategoryInput()
+        input = ListCategories.Input()
         list_categories_output = list_categories.execute(input=input)
 
-        assert repository.list_categories.call_args_list == [
-            call(),
+        assert repository.list.call_args_list == [
+            call(
+                order_by=DEFAULT_CATEGORY_LIST_ORDER,
+                page=1,
+            ),
         ]
 
         assert len(list_categories_output.data) == 2

@@ -36,11 +36,11 @@ def genre_repository_with_romance_genre(
     category_repository: DjangoORMCategoryRepository,
     genre_repository: DjangoORMGenreRepository,
 ) -> DjangoORMGenreRepository:
-    romance_genre.add_category(movie_category.id)
-    romance_genre.add_category(documentary_category.id)
-
-    category_repository.save(category=movie_category)
     category_repository.save(category=documentary_category)
+    category_repository.save(category=movie_category)
+
+    romance_genre.add_category(documentary_category.id)
+    romance_genre.add_category(movie_category.id)
 
     genre_repository.save(genre=romance_genre)
     return genre_repository
@@ -98,12 +98,10 @@ class TestSave:
         assert created_genre.name == romance_genre.name
         assert created_genre.is_active == romance_genre.is_active
 
-        assert (
-            set(
-                category.id
-                for category in created_genre.categories.all()
-            ) == romance_genre.categories
-        )
+        assert set(
+            category.id
+            for category in created_genre.categories.all()
+        ) == set(romance_genre.categories)
 
 
 @pytest.mark.django_db
@@ -113,7 +111,7 @@ class TestList:
         romance_genre: Genre,
         genre_repository_with_romance_genre: DjangoORMGenreRepository,
     ):
-        genres = genre_repository_with_romance_genre.list_genres()
+        genres = genre_repository_with_romance_genre.list()
 
         assert genres == [romance_genre]
 
@@ -121,7 +119,7 @@ class TestList:
         self,
         genre_repository: DjangoORMGenreRepository,
     ):
-        genres = genre_repository.list_genres()
+        genres = genre_repository.list()
         assert genres == []
 
 

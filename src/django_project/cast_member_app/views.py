@@ -8,7 +8,7 @@ from src.core.cast_member.application.errors import (
     CastMemberNotFound,
     InvalidCastMemberData,
 )
-from src.core.cast_member.application.list_cast_member import ListCastMember
+from src.core.cast_member.application.list_cast_member import ListCastMembers
 from src.core.cast_member.application.update_cast_member import UpdateCastMember
 from src.django_project.cast_member_app.repository import DjangoORMCastMemberRepository
 from src.django_project.cast_member_app.serializers import (
@@ -23,9 +23,15 @@ from src.django_project.cast_member_app.serializers import (
 
 class CastMemberViewSet(viewsets.ViewSet):
     def list(self, request: Request) -> Response:
-        input = ListCastMember.Input()
+        input_params = {}
+        if "order_by" in request.query_params:
+            input_params["order_by"] = request.query_params["order_by"]
+        if "page" in request.query_params:
+            input_params["page"] = int(request.query_params["page"])
 
-        use_case = ListCastMember(repository=DjangoORMCastMemberRepository())
+        input = ListCastMembers.Input(**input_params)
+
+        use_case = ListCastMembers(repository=DjangoORMCastMemberRepository())
 
         output = use_case.execute(input=input)
 

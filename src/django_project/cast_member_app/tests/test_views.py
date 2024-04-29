@@ -5,6 +5,9 @@ import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from src.core.cast_member.application.list_cast_member import (
+    DEFAULT_CAST_MEMBER_LIST_ORDER,
+)
 from src.core.cast_member.domain.cast_member import CastMember
 from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
@@ -14,53 +17,48 @@ from src.django_project.cast_member_app.repository import DjangoORMCastMemberRep
 BASE_CAST_MEMBERS_URL = "/api/cast_members/"
 
 
-@pytest.fixture
-def cast_member_repository():
-    return DjangoORMCastMemberRepository()
-
-
-@pytest.fixture
-def persisted_actor_cast_member(
-    cast_member_repository: AbstractCastMemberRepository,
-) -> CastMember:
-    cast_member = CastMember(name="John", type="ACTOR")
-    cast_member_repository.save(cast_member=cast_member)
-    return cast_member
-
-
-@pytest.fixture
-def persisted_director_cast_member(
-    cast_member_repository: AbstractCastMemberRepository,
-) -> CastMember:
-    cast_member = CastMember(name="Jane", type="DIRECTOR")
-    cast_member_repository.save(cast_member=cast_member)
-    return cast_member
-
-
 @pytest.mark.django_db
 class TestListAPI:
+    @pytest.mark.parametrize(
+        "order_by",
+        [None, "name", "-name"]
+    )
     def test_list_cast_members_success(
         self,
-        persisted_actor_cast_member: CastMember,
-        persisted_director_cast_member: CastMember,
+        order_by,
+        actor_cast_member_model: CastMember,
+        director_cast_member_model: CastMember,
     ):
+        expected_cast_members = [
+            {
+                "id": str(actor_cast_member_model.id),
+                "name": actor_cast_member_model.name,
+                "type": actor_cast_member_model.type,
+            },
+            {
+                "id": str(director_cast_member_model.id),
+                "name": director_cast_member_model.name,
+                "type": director_cast_member_model.type,
+            }
+        ]
+
+        if order_by is None:
+            order_by = DEFAULT_CAST_MEMBER_LIST_ORDER
+            params = {}
+        else:
+            params = {
+                "order_by": order_by,
+            }
 
         expected_data = {
-            "data": [
-                {
-                    "id": str(persisted_actor_cast_member.id),
-                    "name": persisted_actor_cast_member.name,
-                    "type": persisted_actor_cast_member.type,
-                },
-                {
-                    "id": str(persisted_director_cast_member.id),
-                    "name": persisted_director_cast_member.name,
-                    "type": persisted_director_cast_member.type,
-                }
-            ]
+            "data": sorted(
+                expected_cast_members,
+                key=lambda item: item[order_by.strip("-")],
+                reverse=order_by.startswith("-"),
+            )
         }
 
-        response = APIClient().get(path=BASE_CAST_MEMBERS_URL)
+        response = APIClient().get(BASE_CAST_MEMBERS_URL, params)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data == expected_data
@@ -142,14 +140,14 @@ class TestCreateAPI:
 class TestUpdateAPI:
     def test_update_cast_member_invalid_payload_error(
         self,
-        persisted_actor_cast_member: CastMember,
+        actor_cast_member_model: CastMember,
     ):
 
         post_data = {
             "name": "",
         }
 
-        url = BASE_CAST_MEMBERS_URL + f"{str(persisted_actor_cast_member.id)}/"
+        url = BASE_CAST_MEMBERS_URL + f"{str(actor_cast_member_model.id)}/"
         response = APIClient().put(url, data=post_data)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -160,11 +158,11 @@ class TestUpdateAPI:
 
     def test_update_cast_member_invalid_id_error(
         self,
-        persisted_actor_cast_member: CastMember,
+        actor_cast_member_model: CastMember,
     ):
 
         post_data = {
-            "type": persisted_actor_cast_member.type,
+            "type": actor_cast_member_model.type,
         }
 
         url = BASE_CAST_MEMBERS_URL + "invalid-id/"
@@ -191,7 +189,7 @@ class TestUpdateAPI:
 
     def test_update_cast_member_valid_payload_success(
         self,
-        persisted_actor_cast_member: CastMember,
+        actor_cast_member_model: CastMember,
         cast_member_repository: DjangoORMCastMemberRepository,
     ):
 
@@ -200,11 +198,11 @@ class TestUpdateAPI:
             "type": "DIRECTOR",
         }
 
-        url = BASE_CAST_MEMBERS_URL + f"{str(persisted_actor_cast_member.id)}/"
+        url = BASE_CAST_MEMBERS_URL + f"{str(actor_cast_member_model.id)}/"
         response = APIClient().put(url, data=post_data)
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        assert response.data["id"] == str(persisted_actor_cast_member.id)
+        assert response.data["id"] == str(actor_cast_member_model.id)
 
         updated_cast_member = cast_member_repository.get_by_id(
             id=UUID(response.data["id"])
@@ -220,16 +218,16 @@ class TestUpdateAPI:
 class TestDeleteCastMember:
     def test_delete_cast_member_success(
         self,
-        persisted_actor_cast_member: CastMember,
+        actor_cast_member_model: CastMember,
         cast_member_repository: DjangoORMCastMemberRepository,
     ):
-        url = BASE_CAST_MEMBERS_URL + f"{str(persisted_actor_cast_member.id)}/"
+        url = BASE_CAST_MEMBERS_URL + f"{str(actor_cast_member_model.id)}/"
         response = APIClient().delete(path=url)
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
         found_cast_member = cast_member_repository.get_by_id(
-            id=persisted_actor_cast_member.id
+            id=actor_cast_member_model.id
         )
         assert found_cast_member is None
 

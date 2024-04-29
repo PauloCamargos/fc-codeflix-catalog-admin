@@ -1,24 +1,9 @@
-
 from uuid import uuid4
+
 import pytest
 
 from src.core.cast_member.domain.cast_member import CastMember
 from src.django_project.cast_member_app.repository import DjangoORMCastMemberRepository
-
-
-@pytest.fixture
-def actor_cast_member() -> CastMember:
-    return CastMember(name="John", type="ACTOR")
-
-
-@pytest.fixture
-def director_cast_member() -> CastMember:
-    return CastMember(name="Jane", type="DIRECTOR")
-
-
-@pytest.fixture
-def cast_member_repository() -> DjangoORMCastMemberRepository:
-    return DjangoORMCastMemberRepository()
 
 
 @pytest.mark.django_db

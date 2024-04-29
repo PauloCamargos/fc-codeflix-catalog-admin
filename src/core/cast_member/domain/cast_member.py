@@ -1,8 +1,8 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from uuid import UUID, uuid4
 
 from src.core.cast_member.domain.errors import InvalidCastMemberTypeError
+from src.core.shared.domain.entity import Entity
 
 MAX_CAST_MEMBER_NAME_NUM_CHARACTERS = 255
 
@@ -15,11 +15,10 @@ class CastMemberType(str, Enum):
         return self.value
 
 
-@dataclass
-class CastMember:
-    name: str = field(compare=False)
-    type: CastMemberType | str = field(compare=False)
-    id: UUID = field(default_factory=uuid4)
+@dataclass(eq=False)
+class CastMember(Entity):
+    name: str
+    type: CastMemberType | str
 
     def update_name(self, name: str) -> None:
         self.name = name
@@ -31,17 +30,19 @@ class CastMember:
 
     def validate(self) -> None:
         if len(self.name) > MAX_CAST_MEMBER_NAME_NUM_CHARACTERS:
-            raise ValueError(
+            self.notification.add_error(
                 "'name' must have less than "
                 f"{MAX_CAST_MEMBER_NAME_NUM_CHARACTERS} characters"
             )
 
         if self.name == "":
-            raise ValueError("'name' must not be empty")
+            self.notification.add_error("'name' must not be empty")
+
+        super().validate()
 
     def __post_init__(self) -> None:
         self._set_type(type=self.type)
-        self.validate()
+        super().__post_init__()
 
     def _set_type(self, type: str | CastMemberType) -> None:
         try:

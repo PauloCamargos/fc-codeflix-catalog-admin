@@ -1,17 +1,18 @@
 from dataclasses import dataclass, field
-from uuid import UUID, uuid4
+
+from src.core.shared.domain.entity import Entity
 
 MAX_CATEGORY_NAME_NUM_CARACTERS = 255
 DEFAULT_CATEGORY_DESCRIPTION = ""
 DEFAULT_CATEGORY_IS_ACTIVE = False
+CATEGORY_DESCRIPTION_MAX_LENGTH = 1024
 
 
-@dataclass
-class Category:
-    name: str = field(compare=False)
-    description: str = field(default=DEFAULT_CATEGORY_DESCRIPTION, compare=False)
-    is_active: bool = field(default=DEFAULT_CATEGORY_IS_ACTIVE, compare=False)
-    id: UUID = field(default_factory=uuid4)
+@dataclass(eq=False)
+class Category(Entity):
+    name: str
+    description: str = field(default=DEFAULT_CATEGORY_DESCRIPTION)
+    is_active: bool = field(default=DEFAULT_CATEGORY_IS_ACTIVE)
 
     def activate(self) -> None:
         self.is_active = True
@@ -28,16 +29,21 @@ class Category:
 
     def validate(self) -> None:
         if len(self.name) > MAX_CATEGORY_NAME_NUM_CARACTERS:
-            raise ValueError(
+            self.notification.add_error(
                 "'name' must have less than "
                 f"{MAX_CATEGORY_NAME_NUM_CARACTERS} characters"
             )
 
         if self.name == "":
-            raise ValueError("'name' must not be empty")
+            self.notification.add_error("'name' must not be empty")
 
-    def __post_init__(self):
-        self.validate()
+        if len(self.description) > CATEGORY_DESCRIPTION_MAX_LENGTH:
+            self.notification.add_error(
+                "'description' cannot be longer than "
+                f"{CATEGORY_DESCRIPTION_MAX_LENGTH} characters"
+            )
+
+        super().validate()
 
     def __str__(self) -> str:
         prefixes: list[str] = []

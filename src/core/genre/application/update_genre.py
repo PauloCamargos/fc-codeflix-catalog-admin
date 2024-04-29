@@ -17,14 +17,14 @@ class UpdateGenre:
         id: UUID
         name: str | None = None
         is_active: bool | None = None
-        categories: set[UUID] | None = None
+        categories: list[UUID] | None = None
 
     @dataclass
     class Output:
         id: UUID
         is_active: bool
         name: str
-        categories: set[UUID]
+        categories: list[UUID]
 
     def __init__(
         self,
@@ -42,18 +42,22 @@ class UpdateGenre:
             raise GenreNotFound()
 
         if input.categories is not None:
+            input_categories_set = set(input.categories)
+            genre_categories_set = set(genre.categories)
+
             existing_category_ids = {
                 category.id
-                for category in self.category_repository.list_categories()
+                for category in self.category_repository.list()
             }
 
-            if not input.categories.issubset(existing_category_ids):
+            if not set(input.categories).issubset(existing_category_ids):
                 raise RelatedCategoriesNotFound(
-                    f"Categories not found: {input.categories - existing_category_ids}"
+                    f"Categories not found: "
+                    f"{input_categories_set - existing_category_ids}"
                 )
 
-            category_ids_to_remove = genre.categories - input.categories
-            category_ids_to_add = input.categories - genre.categories
+            category_ids_to_remove = genre_categories_set - input_categories_set
+            category_ids_to_add = input_categories_set - genre_categories_set
 
             for category_id in category_ids_to_remove:
                 genre.remove_category(category_id)

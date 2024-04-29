@@ -47,7 +47,7 @@ class TestCreateGenreIntegration:
 
         create_genre_input = CreateGenre.Input(
             name="Sci-fi",
-            categories={movie_category.id, documentary_category.id},
+            categories=[movie_category.id, documentary_category.id],
         )
 
         created_genre_output = create_genre.execute(create_genre_input)
@@ -57,7 +57,7 @@ class TestCreateGenreIntegration:
         assert saved_genre is not None
         assert saved_genre.name == create_genre_input.name
         assert saved_genre.is_active == create_genre_input.is_active
-        assert saved_genre.categories == {movie_category.id, documentary_category.id}
+        assert saved_genre.categories == [movie_category.id, documentary_category.id]
 
     def test_create_genre_with_non_existent_categories(
         self,
@@ -69,7 +69,7 @@ class TestCreateGenreIntegration:
             category_repository=category_repository,
         )
 
-        non_existent_category_ids = {uuid4(), uuid4()}
+        non_existent_category_ids = [uuid4(), uuid4()]
         create_genre_input = CreateGenre.Input(
             name="Romance",
             categories=non_existent_category_ids,
@@ -102,4 +102,4 @@ class TestCreateGenreIntegration:
         assert saved_genre is not None
         assert saved_genre.name == created_genre_input.name
         assert saved_genre.is_active == created_genre_input.is_active
-        assert saved_genre.categories == set()
+        assert saved_genre.categories == list()

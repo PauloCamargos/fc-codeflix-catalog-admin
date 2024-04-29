@@ -6,7 +6,7 @@ from src.core.cast_member.domain.cast_member import CastMember
 
 class AbstractCastMemberRepository(ABC):
     @abstractmethod
-    def save(self, cast_member: CastMember) -> UUID:
+    def save(self, cast_member: CastMember) -> None:
         raise NotImplementedError()
 
     @abstractmethod
@@ -14,8 +14,16 @@ class AbstractCastMemberRepository(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def list(self) -> list[CastMember]:
+    def list(
+        self,
+        order_by: str | None = None,
+        page: int | None = None,
+    ) -> list[CastMember]:
         raise NotImplementedError()
+
+    @abstractmethod
+    def count(self) -> int:
+        raise NotImplementedError
 
     @abstractmethod
     def update(self, cast_member: CastMember) -> None:
