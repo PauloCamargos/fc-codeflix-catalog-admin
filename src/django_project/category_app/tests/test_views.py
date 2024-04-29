@@ -52,7 +52,12 @@ class TestListCategoryAPI:
                 expected_categories,
                 key=lambda item: item[order_by.strip("-")],
                 reverse=order_by.startswith("-"),
-            )
+            ),
+            "meta": {
+                "page": 1,
+                "total": 2,
+                "per_page": core_settings.REPOSITORY["page_size"],
+            },
         }
 
         url = "/api/categories/"
@@ -118,11 +123,16 @@ class TestListCategoryAPI:
             "page": page,
         }
 
-        expected_data = {
-            "data": expected_categories_per_page[page]
-        }
-
         overriden_page_size = 2
+
+        expected_data = {
+            "data": expected_categories_per_page[page],
+            "meta": {
+                "page": page,
+                "total": 5,
+                "per_page": overriden_page_size,
+            },
+        }
 
         url = "/api/categories/"
         with patch.dict(
