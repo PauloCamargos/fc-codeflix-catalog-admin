@@ -62,7 +62,12 @@ class TestListAPI:
                 expected_genres,
                 key=lambda item: item[order_by.strip("-")],
                 reverse=order_by.startswith("-"),
-            )
+            ),
+            "meta": {
+                "page": 1,
+                "total": 2,
+                "per_page": core_settings.REPOSITORY["page_size"],
+            }
         }
 
         response = APIClient().get(BASE_GENRE_URL, params)
@@ -73,7 +78,14 @@ class TestListAPI:
     def test_empty_list_genres_and_categories(
         self,
     ):
-        expected_data = {"data": []}
+        expected_data = {
+            "data": [],
+            "meta": {
+                "page": 1,
+                "total": 0,
+                "per_page": core_settings.REPOSITORY["page_size"],
+            },
+        }
 
         response = APIClient().get(path=BASE_GENRE_URL)
 
@@ -143,11 +155,16 @@ class TestListAPI:
             "page": page,
         }
 
-        expected_data = {
-            "data": expected_genres_per_page[page]
-        }
-
         overriden_page_size = 2
+
+        expected_data = {
+            "data": expected_genres_per_page[page],
+            "meta": {
+                "page": page,
+                "total": 5,
+                "per_page": overriden_page_size,
+            },
+        }
 
         url = "/api/genres/"
         with patch.dict(

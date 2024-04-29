@@ -1,5 +1,8 @@
 from rest_framework import serializers
 
+from src.django_project.shared.serializers.serializers import (
+    PaginatedListResponseSerializer,
+)
 
 # class SetField(serializers.ListField):
 #     def to_internal_value(self, data):
@@ -13,7 +16,7 @@ class GenreResponseSerializer(serializers.Serializer):
     categories = serializers.ListField(child=serializers.UUIDField())
 
 
-class ListGenreResponseSerializers(serializers.Serializer):
+class ListGenreResponseSerializers(PaginatedListResponseSerializer):
     data = GenreResponseSerializer(many=True)
 
 
