@@ -3,7 +3,7 @@ from uuid import UUID
 
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 from src.core.shared import settings as core_settings
-from src.core.shared.application.input import ListInputMixin
+from src.core.shared.application.list import ListInputMixin
 
 DEFAULT_CATEGORY_LIST_ORDER = "name"
 

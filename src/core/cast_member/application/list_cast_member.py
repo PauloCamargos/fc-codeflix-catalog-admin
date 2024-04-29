@@ -5,7 +5,7 @@ from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
 )
 from src.core.shared import settings as core_settings
-from src.core.shared.application.input import ListInputMixin
+from src.core.shared.application.list import ListInputMixin
 
 DEFAULT_CAST_MEMBER_LIST_ORDER = "name"
 
