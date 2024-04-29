@@ -2,6 +2,8 @@ import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from src.core.shared import settings
+
 
 @pytest.fixture
 def api_client() -> APIClient:
@@ -12,7 +14,14 @@ def api_client() -> APIClient:
 class TestCreateAndEditDeleteCategory:
     def test_user_can_create_and_edit_category(self, api_client: APIClient) -> None:
         list_response = api_client.get("/api/categories/")
-        assert list_response.data == {"data": []}
+        assert list_response.data == {
+            "data": [],
+            "meta": {
+                "page": 1,
+                "total": 0,
+                "per_page": settings.REPOSITORY["page_size"],
+            },
+        }
 
         create_response = api_client.post(
             "/api/categories/",
@@ -32,7 +41,12 @@ class TestCreateAndEditDeleteCategory:
                     "description": "Movie description",
                     "is_active": True,
                 }
-            ]
+            ],
+            "meta": {
+                "page": 1,
+                "total": 1,
+                "per_page": settings.REPOSITORY["page_size"],
+            },
         }
 
         edit_response = api_client.put(

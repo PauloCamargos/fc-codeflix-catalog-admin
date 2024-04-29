@@ -1,6 +1,9 @@
 from rest_framework import serializers
 
 from src.core.cast_member.domain.cast_member import CastMemberType
+from src.django_project.shared.serializers.serializers import (
+    PaginatedListResponseSerializer,
+)
 
 
 class CastMemberTypeField(serializers.ChoiceField):
@@ -21,7 +24,7 @@ class CastMemberResponseSerializer(serializers.Serializer):
     type = CastMemberTypeField()
 
 
-class ListCastMemberResponseSerializer(serializers.Serializer):
+class ListCastMemberResponseSerializer(PaginatedListResponseSerializer):
     data = CastMemberResponseSerializer(many=True)
 
 
