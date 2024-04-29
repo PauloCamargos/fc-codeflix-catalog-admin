@@ -28,7 +28,7 @@ class ListCastMembers:
     @dataclass
     class Output:
         data: list["ListCastMembers.CastMemberOutput"]
-        meta: list["ListCastMembers.OutputMeta"]
+        meta: "ListCastMembers.OutputMeta"
 
     @dataclass
     class CastMemberOutput:

@@ -4,6 +4,7 @@ from src.core.category.domain.category import Category
 from src.core.genre.application.list_genres import ListGenres
 from src.core.genre.domain.genre import Genre
 from src.core.genre.infra.in_memory_genre_repository import InMemoryGenreRepository
+from src.core.shared import settings
 from src.core.shared.application.errors import InvalidOrderByRequested
 
 
@@ -109,7 +110,12 @@ class TestListGenre:
                     is_active=genre.is_active,
                 )
                 for genre in expected_genres
-            ]
+            ],
+            meta=ListGenres.OutputMeta(
+                page=1,
+                per_page=settings.REPOSITORY["page_size"],
+                total=2,
+            )
         )
 
         assert expected_output == output

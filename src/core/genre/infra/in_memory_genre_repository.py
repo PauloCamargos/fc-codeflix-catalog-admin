@@ -30,7 +30,11 @@ class InMemoryGenreRepository(AbstractGenreRepository):
         if genre:
             self.genres.remove(genre)
 
-    def list(self, order_by: str | None = None) -> list[Genre]:
+    def list(
+        self,
+        order_by: str | None = None,
+        page: int | None = None,
+    ) -> list[Genre]:
         genres = (
             deepcopy(genre)
             for genre in self.genres
@@ -46,6 +50,9 @@ class InMemoryGenreRepository(AbstractGenreRepository):
             )
 
         return list(genres)
+
+    def count(self) -> int:
+        return len(self.genres)
 
     def update(self, genre: Genre) -> None:
         old_genre = self.get_by_id(genre.id)

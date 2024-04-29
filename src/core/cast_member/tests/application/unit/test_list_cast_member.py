@@ -37,7 +37,8 @@ class TestListCastMember:
         output = use_case.execute(input=input)
 
         mocked_cast_member_repository.list.assert_called_once_with(
-            order_by=DEFAULT_CAST_MEMBER_LIST_ORDER
+            order_by=DEFAULT_CAST_MEMBER_LIST_ORDER,
+            page=1,
         )
 
         assert len(output.data) == 1

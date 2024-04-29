@@ -8,6 +8,7 @@ from src.core.cast_member.gateway.cast_member_gateway import (
 from src.core.cast_member.infra.in_memory_cast_member_repository import (
     InMemoryCastMemberRepository,
 )
+from src.core.shared import settings
 from src.core.shared.application.errors import InvalidOrderByRequested
 
 
@@ -87,7 +88,12 @@ class TestListCastMember:
                     type=cast_member.type,
                 )
                 for cast_member in expected_cast_members
-            ]
+            ],
+            meta=ListCastMembers.OutputMeta(
+                page=1,
+                per_page=settings.REPOSITORY["page_size"],
+                total=2,
+            )
         )
 
         assert expected_output == output

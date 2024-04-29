@@ -26,7 +26,7 @@ class ListGenres:
     @dataclass
     class Output:
         data: list["ListGenres.GenreOutput"]
-        meta: list["ListGenres.OutputMeta"]
+        meta: "ListGenres.OutputMeta"
 
     @dataclass
     class OutputMeta:

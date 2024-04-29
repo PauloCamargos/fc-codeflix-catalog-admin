@@ -29,7 +29,11 @@ class InMemoryCastMemberRepository(AbstractCastMemberRepository):
         if cast_member:
             self.cast_members.remove(cast_member)
 
-    def list(self, order_by: str | None = None) -> list[CastMember]:
+    def list(
+        self,
+        order_by: str | None = None,
+        page: int | None = None,
+    ) -> list[CastMember]:
         cast_members = (
             deepcopy(cast_member)
             for cast_member in self.cast_members
@@ -44,6 +48,9 @@ class InMemoryCastMemberRepository(AbstractCastMemberRepository):
             )
 
         return list(self.cast_members)
+
+    def count(self) -> int:
+        return len(self.cast_members)
 
     def update(self, cast_member: CastMember) -> None:
         old_cast_member = self.get_by_id(cast_member.id)
