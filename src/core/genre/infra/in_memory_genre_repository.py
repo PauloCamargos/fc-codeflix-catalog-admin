@@ -3,6 +3,7 @@ from uuid import UUID
 
 from src.core.genre.gateway.genre_gateway import AbstractGenreRepository
 from src.core.genre.domain.genre import Genre
+from src.core.shared import settings
 
 
 class InMemoryGenreRepository(AbstractGenreRepository):
@@ -35,19 +36,22 @@ class InMemoryGenreRepository(AbstractGenreRepository):
         order_by: str | None = None,
         page: int | None = None,
     ) -> list[Genre]:
-        genres = (
+        genres = [
             deepcopy(genre)
             for genre in self.genres
-        )
+        ]
 
         if order_by is not None:
-            return list(
-                sorted(
-                    genres,
-                    key=lambda genre: getattr(genre, order_by.strip("-")),
-                    reverse=order_by.startswith("-"),
-                )
+            sorted_genres = sorted(
+                genres,
+                key=lambda genre: getattr(genre, order_by.strip("-")),
+                reverse=order_by.startswith("-"),
             )
+
+        if page is not None:
+            page_size = settings.REPOSITORY["page_size"]
+            page_offset = (page - 1) * page_size
+            return sorted_genres[page_offset:page_offset + page_size]
 
         return list(genres)
 
