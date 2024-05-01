@@ -1,9 +1,11 @@
 from copy import deepcopy
+from math import ceil
 from uuid import UUID
 
 from src.core.category.domain.category import Category
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 from src.core.shared import settings as core_settings
+from src.core.shared.application.errors import InvalidPageRequested
 
 
 class InMemoryCategoryRepository(AbstractCategoryRepository):
@@ -46,6 +48,11 @@ class InMemoryCategoryRepository(AbstractCategoryRepository):
         if page is not None:
             page_size = core_settings.REPOSITORY["page_size"]
             page_offset = (page - 1) * page_size
+
+            num_elements = max(1, self.count())
+            if page > ceil(num_elements / page_size):
+                raise InvalidPageRequested(page=page)
+
             return sorted_categories[page_offset:page_offset + page_size]
 
         return list(sorted_categories)

@@ -8,7 +8,10 @@ from src.core.category.infra.in_memory_category_repository import (
     InMemoryCategoryRepository,
 )
 from src.core.shared import settings as core_settings
-from src.core.shared.application.errors import InvalidOrderByRequested
+from src.core.shared.application.errors import (
+    InvalidOrderByRequested,
+    InvalidPageRequested,
+)
 
 
 class TestListCategory:
@@ -222,3 +225,26 @@ class TestListCategory:
         )
 
         assert expected_output == output
+
+    @pytest.mark.parametrize(
+        "page",
+        [-1, 0, "-1", "0", 10_000],
+    )
+    def test_list_catgories_pagination_invalid_page_error(
+        self,
+        page: int,
+        category_repository: InMemoryCategoryRepository,
+    ):
+        input = ListCategories.Input(
+            order_by=None,
+            page=page,
+        )
+        use_case = ListCategories(repository=category_repository)
+
+        with pytest.raises(
+            InvalidPageRequested,
+            match=(
+                f"Provided page {page} is not valid"
+            ),
+        ):
+            use_case.execute(input=input)
