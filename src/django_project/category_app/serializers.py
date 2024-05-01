@@ -12,7 +12,7 @@ class CategoryResponseSerializer(serializers.Serializer):
     is_active = serializers.BooleanField()
 
 
-class ListCategoryResponseSerializers(PaginatedListResponseSerializer):
+class ListCategoryResponseSerializer(PaginatedListResponseSerializer):
     data = CategoryResponseSerializer(many=True)
 
 
