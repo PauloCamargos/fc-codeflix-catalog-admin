@@ -1,7 +1,7 @@
 import pytest
 
 from src.core.category.domain.category import Category
-from src.core.genre.application.list_genres import ListGenres
+from src.core.genre.application.list_genres import GenreOutput, ListGenres
 from src.core.genre.domain.genre import Genre
 from src.core.genre.infra.in_memory_genre_repository import InMemoryGenreRepository
 from src.core.shared import settings
@@ -103,7 +103,7 @@ class TestListGenre:
 
         expected_output = ListGenres.Output(
             data=[
-                ListGenres.GenreOutput(
+                GenreOutput(
                     id=genre.id,
                     name=genre.name,
                     categories=genre.categories,
@@ -111,7 +111,7 @@ class TestListGenre:
                 )
                 for genre in expected_genres
             ],
-            meta=ListGenres.OutputMeta(
+            meta=ListGenres.Meta(
                 page=1,
                 per_page=settings.REPOSITORY["page_size"],
                 total=2,
@@ -122,12 +122,17 @@ class TestListGenre:
 
     def test_list_genre_invalid_order_by_error(
         self,
+        genre_repository: InMemoryGenreRepository,
     ):
         order_by = "potato"
         valid_order_by_attrs = ", ".join(
             repr(attr)
-            for attr in ListGenres.Input.get_valid_order_by_attributes()
+            for attr in ListGenres.order_by_fields
         )
+
+        input = ListGenres.Input(order_by=order_by)
+
+        use_case = ListGenres(repository=genre_repository)
 
         with pytest.raises(
             InvalidOrderByRequested,
@@ -136,4 +141,4 @@ class TestListGenre:
                 f"is not one of: {valid_order_by_attrs}"
             ),
         ):
-            ListGenres.Input(order_by=order_by)
+            use_case.execute(input=input)

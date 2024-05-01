@@ -16,8 +16,8 @@ class AbstractGenreRepository(ABC):
     @abstractmethod
     def list(
         self,
-        order_by: str | None = None,
-        page: int | None = None,
+        order_by: str | None,
+        page: int,
     ) -> list[Genre]:
         raise NotImplementedError
 

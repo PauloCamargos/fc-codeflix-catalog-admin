@@ -7,11 +7,13 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from src.core.category.domain.category import Category
-from src.core.genre.application.list_genres import DEFAULT_GENRE_LIST_ORDER
 from src.core.shared import settings as core_settings
 from src.django_project.category_app.repository import DjangoORMCategoryRepository
 from src.django_project.genre_app.models import Genre as GenreModel
-from src.django_project.genre_app.repository import DjangoORMGenreRepository
+from src.django_project.genre_app.repository import (
+    DEFAULT_GENRE_LIST_ORDER,
+    DjangoORMGenreRepository,
+)
 
 BASE_GENRE_URL = "/api/genres/"
 
