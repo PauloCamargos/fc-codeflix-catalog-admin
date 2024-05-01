@@ -21,6 +21,28 @@ class OrderedPaginatedListMixin:
     order_by_query_pagam = "order_by"
     page_query_param = "page"
 
+    def list(self, request: Request) -> Response:
+        input_params = self.get_input_params_dict(request=request)
+
+        use_case_cls = self.get_list_use_case_class()
+
+        output = (
+            use_case_cls(
+                repository=self.get_repository_class()(),
+            )
+            .execute(
+                input=use_case_cls.Input(**input_params),
+            )
+        )
+
+        serializer_cls = self.get_list_serializer_cls()
+        serialized_categories = serializer_cls(instance=output)
+
+        return Response(
+            status=status.HTTP_200_OK,
+            data=serialized_categories.data,
+        )
+
     def get_order_by(self, request: Request) -> Any:
         return request.query_params.get(self.order_by_query_pagam, None)
 
@@ -72,25 +94,3 @@ class OrderedPaginatedListMixin:
             )
         )
         return serializer_class
-
-    def list(self, request: Request) -> Response:
-        input_params = self.get_input_params_dict(request=request)
-
-        use_case_cls = self.get_list_use_case_class()
-
-        output = (
-            use_case_cls(
-                repository=self.get_repository_class()(),
-            )
-            .execute(
-                input=use_case_cls.Input(**input_params),
-            )
-        )
-
-        serializer_cls = self.get_list_serializer_cls()
-        serialized_categories = serializer_cls(instance=output)
-
-        return Response(
-            status=status.HTTP_200_OK,
-            data=serialized_categories.data,
-        )
