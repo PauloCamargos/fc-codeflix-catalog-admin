@@ -15,7 +15,10 @@ from src.core.cast_member.infra.in_memory_cast_member_repository import (
 )
 from src.core.cast_member.tests.conftest import cast_member_repository
 from src.core.shared import settings
-from src.core.shared.application.errors import InvalidOrderByRequested
+from src.core.shared.application.errors import (
+    InvalidOrderByRequested,
+    InvalidPageRequested,
+)
 
 
 class TestListCastMember:
@@ -104,6 +107,29 @@ class TestListCastMember:
             output = use_case.execute(input=input)
 
         assert output == expected_output
+
+    @pytest.mark.parametrize(
+        "page",
+        [-1, 0, "-1", "0", 10_000],
+    )
+    def test_list_catgories_pagination_invalid_page_error(
+        self,
+        page: int,
+        cast_member_repository: InMemoryCastMemberRepository,
+    ):
+        input = ListCastMembers.Input(
+            order_by=None,
+            page=page,
+        )
+        use_case = ListCastMembers(repository=cast_member_repository)
+
+        with pytest.raises(
+            InvalidPageRequested,
+            match=(
+                f"Provided page {page} is not valid"
+            ),
+        ):
+            use_case.execute(input=input)
 
     def test_list_cast_member_no_order_by_success(
         self,
