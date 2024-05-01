@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from typing import Generic, Protocol, TypeVar
+from dataclasses import dataclass
+from typing import Any, Generic, TypeVar
 
 from src.core.shared import settings as core_settings
 from src.core.shared.application.errors import (
@@ -8,6 +8,7 @@ from src.core.shared.application.errors import (
     InvalidPageRequested,
 )
 from src.core.shared.domain.entity import Entity
+from src.django_project.shared.repository.mapper import ListableRepository
 
 
 @dataclass(kw_only=True)
@@ -42,18 +43,6 @@ ENTITY_OUTPUT_DATA2 = TypeVar("ENTITY_OUTPUT_DATA2")
 ENTITY = TypeVar("ENTITY", bound=Entity)
 
 
-class Repository(Protocol, Generic[ENTITY]):
-    def list(
-        self,
-        order_by: str | None,
-        page: int,
-    ) -> list[ENTITY]:
-        ...
-
-    def count(self) -> int:
-        ...
-
-
 class PaginatedListUseCase(ABC, Generic[ENTITY, ENTITY_OUTPUT_DATA]):
     default_order_by_field = "id"
     order_by_fields = ["id"]
@@ -61,7 +50,7 @@ class PaginatedListUseCase(ABC, Generic[ENTITY, ENTITY_OUTPUT_DATA]):
     @dataclass
     class Input:
         order_by: str | None = None
-        page: int = field(default=1)
+        page: int | str | None = None
 
     @dataclass
     class Output(Generic[ENTITY_OUTPUT_DATA2]):
@@ -74,30 +63,27 @@ class PaginatedListUseCase(ABC, Generic[ENTITY, ENTITY_OUTPUT_DATA]):
         per_page: int
         total: int
 
-    def __init__(self, repository: Repository):
+    def __init__(self, repository: ListableRepository):
         self.repository = repository
 
     def execute(
         self,
         input: Input,
     ) -> "PaginatedListUseCase.Output[ENTITY_OUTPUT_DATA]":
-        self.validate_input(input=input)
-
-        if input.order_by is not None:
-            order_by = input.order_by
-        else:
-            order_by = self.default_order_by_field
+        page = self.get_validated_page(page=input.page)
+        order_by = self.get_validated_order_by(order_by=input.order_by)
 
         entities = self.repository.list(
             order_by=order_by,
-            page=input.page,
+            page=page,
         )
+
         total = self.repository.count()
 
         data = self.get_output_data_from_entities(entities=entities)
 
         meta = PaginatedListUseCase.Meta(
-            page=input.page,
+            page=page,
             per_page=core_settings.REPOSITORY["page_size"],
             total=total,
         )
@@ -114,18 +100,32 @@ class PaginatedListUseCase(ABC, Generic[ENTITY, ENTITY_OUTPUT_DATA]):
     ) -> list[ENTITY_OUTPUT_DATA]:
         pass
 
-    @classmethod
-    def validate_input(cls, input: Input) -> None:
-        if input.page < 1:
-            raise InvalidPageRequested(page=input.page)
+    def get_validated_page(self, page: Any) -> int:
+        if page is None:
+            return 1
 
-        valid_order_by_fields = getattr(cls, "order_by_fields")
+        try:
+            if isinstance(page, float) and not page.is_integer():
+                raise ValueError
+            page = int(page)
+        except (TypeError, ValueError):
+            raise InvalidPageRequested(page=page)
+        else:
+            if page < 1:
+                raise InvalidPageRequested(page=page)
 
-        if (
-            input.order_by is not None
-            and input.order_by not in valid_order_by_fields
-        ):
+        return page
+
+    def get_validated_order_by(self, order_by: str | None) -> str:
+        if order_by is None:
+            order_by = self.default_order_by_field
+
+        valid_order_by_fields = getattr(self, "order_by_fields")
+
+        if order_by not in valid_order_by_fields:
             raise InvalidOrderByRequested(
-                order_by=input.order_by,
+                order_by=order_by,
                 valid_order_by_attributes=valid_order_by_fields,
             )
+
+        return order_by
