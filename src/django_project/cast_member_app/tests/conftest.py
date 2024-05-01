@@ -43,9 +43,9 @@ def director_ray_cast_member_model() -> CastMemberModel:
     return cast_member
 
 
-# --------------------------------- #
-# CAST MEMBER MODEL (non-persisted) #
-# --------------------------------- #
+# ----------------------------------- #
+# CAST MEMBER ENTIITY (non-persisted) #
+# ----------------------------------- #
 @pytest.fixture
 def actor_cast_member() -> CastMember:
     return CastMember(name="John", type="ACTOR")

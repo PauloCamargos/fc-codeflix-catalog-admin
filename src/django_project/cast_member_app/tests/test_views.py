@@ -98,7 +98,7 @@ class TestListAPI:
         director_jane_cast_member_model: CastMember,
         director_ray_cast_member_model: CastMember,
     ):
-        expected_genres_per_page: dict[int, list[Any]] = {
+        expected_cast_members_per_page: dict[int, list[Any]] = {
             1: [
                     {
                         "id": str(actor_aston_cast_member_model.id),
@@ -140,7 +140,7 @@ class TestListAPI:
         overriden_page_size = 2
 
         expected_data = {
-            "data": expected_genres_per_page[page],
+            "data": expected_cast_members_per_page[page],
             "meta": {
                 "page": page,
                 "total": 5,
