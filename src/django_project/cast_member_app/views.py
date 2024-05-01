@@ -19,28 +19,14 @@ from src.django_project.cast_member_app.serializers import (
     UpdateCastMemberRequestSerializer,
     UpdateCastMemberResponseSerializer,
 )
+from src.django_project.shared.views import mixins
 
 
-class CastMemberViewSet(viewsets.ViewSet):
-    def list(self, request: Request) -> Response:
-        input_params = {}
-        if "order_by" in request.query_params:
-            input_params["order_by"] = request.query_params["order_by"]
-        if "page" in request.query_params:
-            input_params["page"] = int(request.query_params["page"])
+class CastMemberViewSet(viewsets.ViewSet, mixins.OrderedPaginatedListMixin):
+    repository_class = DjangoORMCastMemberRepository
 
-        input = ListCastMembers.Input(**input_params)
-
-        use_case = ListCastMembers(repository=DjangoORMCastMemberRepository())
-
-        output = use_case.execute(input=input)
-
-        serialized_cast_members = ListCastMemberResponseSerializer(instance=output)
-
-        return Response(
-            status=status.HTTP_200_OK,
-            data=serialized_cast_members.data,
-        )
+    list_use_case_class = ListCastMembers
+    serializer_class = ListCastMemberResponseSerializer
 
     def create(self, request: Request) -> Response:
         serializer_input = CreateCastMemberRequestSerializer(data=request.data)
