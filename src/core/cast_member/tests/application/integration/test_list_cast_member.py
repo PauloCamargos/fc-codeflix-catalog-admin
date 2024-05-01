@@ -19,6 +19,29 @@ from src.core.shared.application.errors import InvalidOrderByRequested
 
 
 class TestListCastMember:
+    def test_list_cast_members_empty_success(
+        self,
+        cast_member_repository: InMemoryCastMemberRepository,
+    ) -> None:
+
+        list_cast_members = ListCastMembers(repository=cast_member_repository)
+
+        input = ListCastMembers.Input()
+        output = list_cast_members.execute(input=input)
+
+        expected_output: ListCastMembers.Output[CastMemberOutput] = (
+            ListCastMembers.Output(
+                data=[],
+                meta=ListCastMembers.Meta(
+                    page=1,
+                    per_page=settings.REPOSITORY["page_size"],
+                    total=0,
+                )
+            )
+        )
+
+        assert expected_output == output
+
     @pytest.mark.parametrize(
         "page",
         [1, 2, 3],
