@@ -1,6 +1,9 @@
 import pytest
 
-from src.core.cast_member.application.list_cast_member import ListCastMembers
+from src.core.cast_member.application.list_cast_member import (
+    CastMemberOutput,
+    ListCastMembers,
+)
 from src.core.cast_member.domain.cast_member import CastMember
 from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
@@ -82,14 +85,14 @@ class TestListCastMember:
 
         expected_output = ListCastMembers.Output(
             data=[
-                ListCastMembers.CastMemberOutput(
+                CastMemberOutput(
                     id=cast_member.id,
                     name=cast_member.name,
                     type=cast_member.type,
                 )
                 for cast_member in expected_cast_members
             ],
-            meta=ListCastMembers.OutputMeta(
+            meta=ListCastMembers.Meta(
                 page=1,
                 per_page=settings.REPOSITORY["page_size"],
                 total=2,
@@ -104,8 +107,12 @@ class TestListCastMember:
         order_by = "potato"
         valid_order_by_attrs = ", ".join(
             repr(attr)
-            for attr in ListCastMembers.Input.get_valid_order_by_attributes()
+            for attr in ListCastMembers.order_by_fields
         )
+
+        input = ListCastMembers.Input(order_by=order_by)
+
+        use_case = ListCastMembers(repository=cast_member_repository)
 
         with pytest.raises(
             InvalidOrderByRequested,
@@ -114,4 +121,4 @@ class TestListCastMember:
                 f"is not one of: {valid_order_by_attrs}"
             ),
         ):
-            ListCastMembers.Input(order_by=order_by)
+            use_case.execute(input=input)

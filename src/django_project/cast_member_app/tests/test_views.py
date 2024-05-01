@@ -7,9 +7,7 @@ import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from src.core.cast_member.application.list_cast_member import (
-    DEFAULT_CAST_MEMBER_LIST_ORDER,
-)
+from src.core.cast_member.application.list_cast_member import ListCastMembers
 from src.core.cast_member.domain.cast_member import CastMember
 from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
@@ -46,7 +44,7 @@ class TestListAPI:
         ]
 
         if order_by is None:
-            order_by = DEFAULT_CAST_MEMBER_LIST_ORDER
+            order_by = ListCastMembers.default_order_by_field
             params = {}
         else:
             params = {

@@ -2,10 +2,7 @@ from unittest.mock import MagicMock, create_autospec
 
 import pytest
 
-from src.core.cast_member.application.list_cast_member import (
-    DEFAULT_CAST_MEMBER_LIST_ORDER,
-    ListCastMembers,
-)
+from src.core.cast_member.application.list_cast_member import ListCastMembers
 from src.core.cast_member.domain.cast_member import CastMember
 from src.core.cast_member.gateway.cast_member_gateway import (
     AbstractCastMemberRepository,
@@ -37,7 +34,7 @@ class TestListCastMember:
         output = use_case.execute(input=input)
 
         mocked_cast_member_repository.list.assert_called_once_with(
-            order_by=DEFAULT_CAST_MEMBER_LIST_ORDER,
+            order_by=ListCastMembers.default_order_by_field,
             page=1,
         )
 
