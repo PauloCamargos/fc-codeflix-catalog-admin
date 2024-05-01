@@ -11,7 +11,7 @@ from src.core.shared import settings as core_settings
 from src.core.shared.application.errors import InvalidOrderByRequested
 
 
-class TestListCategoryIntegration:
+class TestListCategory:
     def test_list_categories_empty_success(
         self,
         category_repository: InMemoryCategoryRepository,
