@@ -13,7 +13,6 @@ from src.core.cast_member.gateway.cast_member_gateway import (
 from src.core.cast_member.infra.in_memory_cast_member_repository import (
     InMemoryCastMemberRepository,
 )
-from src.core.cast_member.tests.conftest import cast_member_repository
 from src.core.shared import settings
 from src.core.shared.application.errors import (
     InvalidOrderByRequested,
@@ -225,6 +224,7 @@ class TestListCastMember:
 
     def test_list_cast_member_invalid_order_by_error(
         self,
+        cast_member_repository: AbstractCastMemberRepository,
     ):
         order_by = "potato"
         valid_order_by_attrs = ", ".join(
