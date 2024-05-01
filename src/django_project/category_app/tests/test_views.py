@@ -6,7 +6,7 @@ import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from src.core.category.application.list_categories import DEFAULT_CATEGORY_LIST_ORDER
+from src.core.category.application.list_categories import ListCategories
 from src.core.category.domain.category import Category
 from src.core.shared import settings as core_settings
 from src.django_project.category_app.repository import DjangoORMCategoryRepository
@@ -40,7 +40,7 @@ class TestListCategoryAPI:
         ]
 
         if order_by is None:
-            order_by = DEFAULT_CATEGORY_LIST_ORDER
+            order_by = ListCategories.default_order_by_field
             params = {}
         else:
             params = {

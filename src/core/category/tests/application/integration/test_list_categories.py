@@ -1,13 +1,14 @@
-import pytest
 from unittest.mock import patch
 
-from src.core.category.application.list_categories import ListCategories
+import pytest
+
+from src.core.category.application.list_categories import CategoryOutput, ListCategories
 from src.core.category.domain.category import Category
 from src.core.category.infra.in_memory_category_repository import (
     InMemoryCategoryRepository,
 )
-from src.core.shared.application.errors import InvalidOrderByRequested
 from src.core.shared import settings as core_settings
+from src.core.shared.application.errors import InvalidOrderByRequested
 
 
 @pytest.fixture
@@ -123,7 +124,7 @@ class TestListCategoryIntegration:
 
         expected_output = ListCategories.Output(
             data=[
-                ListCategories.CategoryOutput(
+                CategoryOutput(
                     id=category.id,
                     name=category.name,
                     description=category.description,
@@ -131,7 +132,7 @@ class TestListCategoryIntegration:
                 )
                 for category in expected_categories
             ],
-            meta=ListCategories.OutputMeta(
+            meta=ListCategories.Meta(
                 page=1,
                 per_page=core_settings.REPOSITORY["page_size"],
                 total=len(expected_categories),
@@ -144,8 +145,11 @@ class TestListCategoryIntegration:
         order_by = "potato"
         valid_order_by_attrs = ", ".join(
             repr(attr)
-            for attr in ListCategories.Input.get_valid_order_by_attributes()
+            for attr in ListCategories.order_by_fields
         )
+        input = ListCategories.Input(order_by=order_by)
+
+        use_case = ListCategories(repository=category_repository)
 
         with pytest.raises(
             InvalidOrderByRequested,
@@ -154,7 +158,7 @@ class TestListCategoryIntegration:
                 f"is not one of: {valid_order_by_attrs}"
             ),
         ):
-            ListCategories.Input(order_by=order_by)
+            use_case.execute(input=input)
 
     @pytest.mark.parametrize(
         "page",
@@ -206,7 +210,7 @@ class TestListCategoryIntegration:
 
         expected_output = ListCategories.Output(
             data=[
-                ListCategories.CategoryOutput(
+                CategoryOutput(
                     id=category.id,
                     name=category.name,
                     description=category.description,
@@ -214,7 +218,7 @@ class TestListCategoryIntegration:
                 )
                 for category in expected_output_by_page[page]
             ],
-            meta=ListCategories.OutputMeta(
+            meta=ListCategories.Meta(
                 page=page,
                 per_page=overriden_page_size,
                 total=len(
