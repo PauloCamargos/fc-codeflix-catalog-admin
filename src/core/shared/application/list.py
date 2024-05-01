@@ -77,29 +77,6 @@ class PaginatedListUseCase(ABC, Generic[ENTITY, ENTITY_OUTPUT_DATA]):
     def __init__(self, repository: Repository):
         self.repository = repository
 
-    @staticmethod
-    @abstractmethod
-    def get_output_data_from_entities(
-        entities: list[ENTITY],
-    ) -> list[ENTITY_OUTPUT_DATA]:
-        pass
-
-    @classmethod
-    def validate_input(cls, input: Input) -> None:
-        if input.page < 1:
-            raise InvalidPageRequested(page=input.page)
-
-        valid_order_by_fields = getattr(cls, "order_by_fields")
-
-        if (
-            input.order_by is not None
-            and input.order_by not in valid_order_by_fields
-        ):
-            raise InvalidOrderByRequested(
-                order_by=input.order_by,
-                valid_order_by_attributes=valid_order_by_fields,
-            )
-
     def execute(
         self,
         input: Input,
@@ -129,3 +106,26 @@ class PaginatedListUseCase(ABC, Generic[ENTITY, ENTITY_OUTPUT_DATA]):
             data=data,
             meta=meta,
         )
+
+    @staticmethod
+    @abstractmethod
+    def get_output_data_from_entities(
+        entities: list[ENTITY],
+    ) -> list[ENTITY_OUTPUT_DATA]:
+        pass
+
+    @classmethod
+    def validate_input(cls, input: Input) -> None:
+        if input.page < 1:
+            raise InvalidPageRequested(page=input.page)
+
+        valid_order_by_fields = getattr(cls, "order_by_fields")
+
+        if (
+            input.order_by is not None
+            and input.order_by not in valid_order_by_fields
+        ):
+            raise InvalidOrderByRequested(
+                order_by=input.order_by,
+                valid_order_by_attributes=valid_order_by_fields,
+            )
