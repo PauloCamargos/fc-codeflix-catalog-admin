@@ -1,11 +1,15 @@
 from unittest.mock import patch
+
 import pytest
 
 from src.core.genre.application.list_genres import GenreOutput, ListGenres
 from src.core.genre.domain.genre import Genre
 from src.core.genre.infra.in_memory_genre_repository import InMemoryGenreRepository
 from src.core.shared import settings
-from src.core.shared.application.errors import InvalidOrderByRequested
+from src.core.shared.application.errors import (
+    InvalidOrderByRequested,
+    InvalidPageRequested,
+)
 
 
 class TestListGenre:
@@ -220,3 +224,26 @@ class TestListGenre:
         )
 
         assert expected_output == output
+
+    @pytest.mark.parametrize(
+        "page",
+        [-1, 0, "-1", "0", 10_000],
+    )
+    def test_list_genres_pagination_invalid_page_error(
+        self,
+        page: int,
+        genre_repository: InMemoryGenreRepository,
+    ):
+        input = ListGenres.Input(
+            order_by=None,
+            page=page,
+        )
+        use_case = ListGenres(repository=genre_repository)
+
+        with pytest.raises(
+            InvalidPageRequested,
+            match=(
+                f"Provided page {page} is not valid"
+            ),
+        ):
+            use_case.execute(input=input)
