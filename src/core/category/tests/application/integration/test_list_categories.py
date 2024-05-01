@@ -11,88 +11,74 @@ from src.core.shared import settings as core_settings
 from src.core.shared.application.errors import InvalidOrderByRequested
 
 
-@pytest.fixture
-def movie_category() -> Category:
-    return Category(
-        name="Movie",
-        description="Movie category",
-        is_active=True,
-    )
-
-
-@pytest.fixture
-def serie_category() -> Category:
-    return Category(
-        name="Serie",
-        description="Serie category",
-        is_active=True,
-    )
-
-
-@pytest.fixture
-def documentary_category() -> Category:
-    return Category(
-        name="Documentary",
-        description="Documentary category",
-        is_active=True,
-    )
-
-
-@pytest.fixture
-def music_clip_category() -> Category:
-    return Category(
-        name="Music clip",
-        description="Music clip category",
-        is_active=True,
-    )
-
-
-@pytest.fixture
-def lecture_category() -> Category:
-    return Category(
-        name="Lecture",
-        description="Lecture category",
-        is_active=True,
-    )
-
-
-@pytest.fixture
-def category_repository(
-    movie_category: Category,
-) -> InMemoryCategoryRepository:
-    return InMemoryCategoryRepository(
-        categories=[movie_category]
-    )
-
-
 class TestListCategoryIntegration:
-    def test_list_categories_empty_success(self) -> None:
-        repository = InMemoryCategoryRepository(categories=[])
+    def test_list_categories_empty_success(
+        self,
+        category_repository: InMemoryCategoryRepository,
+    ) -> None:
 
-        list_categories = ListCategories(repository=repository)
+        list_categories = ListCategories(repository=category_repository)
 
         input = ListCategories.Input()
-        list_categories_output = list_categories.execute(input=input)
+        output = list_categories.execute(input=input)
 
-        assert len(list_categories_output.data) == 0
+        expected_output = ListCategories.Output(
+            data=[],
+            meta=ListCategories.Meta(
+                page=1,
+                per_page=core_settings.REPOSITORY["page_size"],
+                total=0,
+            )
+        )
+
+        assert expected_output == output
 
     def test_list_categories_no_order_by_success(
         self,
         movie_category: Category,
+        documentary_category: Category,
         category_repository: InMemoryCategoryRepository,
     ) -> None:
-        input = ListCategories.Input()
+        category_repository.save(movie_category)
+        category_repository.save(documentary_category)
+
+        input = ListCategories.Input(order_by=None)
 
         use_case = ListCategories(repository=category_repository)
 
         output = use_case.execute(input=input)
 
-        assert len(output.data) == 1
-        [found_movie_category_output] = output.data
-        assert found_movie_category_output.id == movie_category.id
-        assert found_movie_category_output.name == movie_category.name
-        assert found_movie_category_output.description == movie_category.description
-        assert found_movie_category_output.is_active == movie_category.is_active
+        expected_categories = sorted(
+            [
+                movie_category,
+                documentary_category,
+            ],
+            key=lambda category: getattr(
+                category,
+                ListCategories.default_order_by_field,
+            ),
+            reverse=ListCategories.default_order_by_field.startswith("-"),
+        )
+
+        expected_output = ListCategories.Output(
+            data=[
+                CategoryOutput(
+                    id=category.id,
+                    name=category.name,
+                    description=category.description,
+                    is_active=category.is_active,
+                )
+                for category in expected_categories
+            ],
+            meta=ListCategories.Meta(
+                page=1,
+                per_page=core_settings.REPOSITORY["page_size"],
+                total=2,
+            )
+        )
+
+        assert output == expected_output
+
 
     @pytest.mark.parametrize(
             "order_by",
@@ -105,7 +91,8 @@ class TestListCategoryIntegration:
         serie_category: Category,
         category_repository: InMemoryCategoryRepository,
     ):
-        category_repository.save(category=serie_category)
+        category_repository.save(serie_category)
+        category_repository.save(movie_category)
 
         input = ListCategories.Input(order_by=order_by)
 
@@ -141,7 +128,10 @@ class TestListCategoryIntegration:
 
         assert expected_output == output
 
-    def test_list_categories_invalid_order_by_error(self):
+    def test_list_categories_invalid_order_by_error(
+        self,
+        category_repository: InMemoryCategoryRepository,
+    ):
         order_by = "potato"
         valid_order_by_attrs = ", ".join(
             repr(attr)
@@ -174,6 +164,7 @@ class TestListCategoryIntegration:
         lecture_category: Category,
         category_repository: InMemoryCategoryRepository,
     ):
+        category_repository.save(category=movie_category)
         category_repository.save(category=serie_category)
         category_repository.save(category=documentary_category)
         category_repository.save(category=music_clip_category)
