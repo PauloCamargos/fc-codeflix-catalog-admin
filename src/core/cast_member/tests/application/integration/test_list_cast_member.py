@@ -1,4 +1,3 @@
-from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -40,44 +39,31 @@ class TestListCastMember:
         cast_member_repository.save(director_jane_cast_member)
         cast_member_repository.save(director_ray_cast_member)
 
-        expected_cast_members_per_page: dict[int, list[Any]] = {
+        expected_cast_members_per_page: dict[int, list[CastMember]] = {
             1: [
-                    CastMemberOutput(
-                        id=actor_aston_cast_member.id,
-                        name=actor_aston_cast_member.name,
-                        type=actor_aston_cast_member.type,
-                    ),
-                    CastMemberOutput(
-                        id=director_jane_cast_member.id,
-                        name=director_jane_cast_member.name,
-                        type=director_jane_cast_member.type,
-                    ),
+                actor_aston_cast_member,
+                director_jane_cast_member,
             ],
             2: [
-                    CastMemberOutput(
-                        id=actor_john_cast_member.id,
-                        name=actor_john_cast_member.name,
-                        type=actor_john_cast_member.type,
-                    ),
-                    CastMemberOutput(
-                        id=director_ray_cast_member.id,
-                        name=director_ray_cast_member.name,
-                        type=director_ray_cast_member.type,
-                    ),
+                actor_john_cast_member,
+                director_ray_cast_member,
             ],
             3: [
-                    CastMemberOutput(
-                        id=actor_will_cast_member.id,
-                        name=actor_will_cast_member.name,
-                        type=actor_will_cast_member.type,
-                    ),
+                actor_will_cast_member,
             ],
         }
 
         overriden_page_size = 2
 
         expected_output = ListCastMembers.Output(
-            data=expected_cast_members_per_page[page],
+            data=[
+                CastMemberOutput(
+                    id=cast_member.id,
+                    name=cast_member.name,
+                    type=cast_member.type,
+                )
+                for cast_member in expected_cast_members_per_page[page]
+            ],
             meta=ListCastMembers.Meta(
                 page=page,
                 per_page=overriden_page_size,

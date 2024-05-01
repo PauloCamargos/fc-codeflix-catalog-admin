@@ -22,7 +22,7 @@ class TestListCategoryIntegration:
         input = ListCategories.Input()
         output = list_categories.execute(input=input)
 
-        expected_output = ListCategories.Output(
+        expected_output: ListCategories.Output[CategoryOutput] = ListCategories.Output(
             data=[],
             meta=ListCategories.Meta(
                 page=1,
@@ -78,7 +78,6 @@ class TestListCategoryIntegration:
         )
 
         assert output == expected_output
-
 
     @pytest.mark.parametrize(
             "order_by",
