@@ -1,5 +1,9 @@
 from rest_framework import serializers
 
+from src.django_project.shared.serializers.serializers import (
+    PaginatedListResponseSerializer,
+)
+
 
 class CategoryResponseSerializer(serializers.Serializer):
     id = serializers.UUIDField()
@@ -8,7 +12,7 @@ class CategoryResponseSerializer(serializers.Serializer):
     is_active = serializers.BooleanField()
 
 
-class ListCategoryResponseSerializers(serializers.Serializer):
+class ListCategoryResponseSerializer(PaginatedListResponseSerializer):
     data = CategoryResponseSerializer(many=True)
 
 

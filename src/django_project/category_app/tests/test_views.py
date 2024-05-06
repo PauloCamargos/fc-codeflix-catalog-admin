@@ -6,7 +6,7 @@ import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from src.core.category.application.list_categories import DEFAULT_CATEGORY_LIST_ORDER
+from src.core.category.application.list_categories import ListCategories
 from src.core.category.domain.category import Category
 from src.core.shared import settings as core_settings
 from src.django_project.category_app.repository import DjangoORMCategoryRepository
@@ -40,7 +40,7 @@ class TestListCategoryAPI:
         ]
 
         if order_by is None:
-            order_by = DEFAULT_CATEGORY_LIST_ORDER
+            order_by = ListCategories.default_order_by_field
             params = {}
         else:
             params = {
@@ -52,7 +52,12 @@ class TestListCategoryAPI:
                 expected_categories,
                 key=lambda item: item[order_by.strip("-")],
                 reverse=order_by.startswith("-"),
-            )
+            ),
+            "meta": {
+                "page": 1,
+                "total": 2,
+                "per_page": core_settings.REPOSITORY["page_size"],
+            },
         }
 
         url = "/api/categories/"
@@ -118,11 +123,16 @@ class TestListCategoryAPI:
             "page": page,
         }
 
-        expected_data = {
-            "data": expected_categories_per_page[page]
-        }
-
         overriden_page_size = 2
+
+        expected_data = {
+            "data": expected_categories_per_page[page],
+            "meta": {
+                "page": page,
+                "total": 5,
+                "per_page": overriden_page_size,
+            },
+        }
 
         url = "/api/categories/"
         with patch.dict(

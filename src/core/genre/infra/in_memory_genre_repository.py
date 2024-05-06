@@ -1,8 +1,11 @@
 from copy import deepcopy
+from math import ceil
 from uuid import UUID
 
-from src.core.genre.gateway.genre_gateway import AbstractGenreRepository
 from src.core.genre.domain.genre import Genre
+from src.core.genre.gateway.genre_gateway import AbstractGenreRepository
+from src.core.shared import settings
+from src.core.shared.application.errors import InvalidPageRequested
 
 
 class InMemoryGenreRepository(AbstractGenreRepository):
@@ -35,19 +38,27 @@ class InMemoryGenreRepository(AbstractGenreRepository):
         order_by: str | None = None,
         page: int | None = None,
     ) -> list[Genre]:
-        genres = (
+        genres = [
             deepcopy(genre)
             for genre in self.genres
-        )
+        ]
 
         if order_by is not None:
-            return list(
-                sorted(
-                    genres,
-                    key=lambda genre: getattr(genre, order_by.strip("-")),
-                    reverse=order_by.startswith("-"),
-                )
+            sorted_genres = sorted(
+                genres,
+                key=lambda genre: getattr(genre, order_by.strip("-")),
+                reverse=order_by.startswith("-"),
             )
+
+        if page is not None:
+            page_size = settings.REPOSITORY["page_size"]
+            page_offset = (page - 1) * page_size
+
+            num_elements = max(1, self.count())
+            if page > ceil(num_elements / page_size):
+                raise InvalidPageRequested(page=page)
+
+            return sorted_genres[page_offset:page_offset + page_size]
 
         return list(genres)
 

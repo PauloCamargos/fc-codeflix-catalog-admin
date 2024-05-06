@@ -7,11 +7,13 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from src.core.category.domain.category import Category
-from src.core.genre.application.list_genres import DEFAULT_GENRE_LIST_ORDER
 from src.core.shared import settings as core_settings
 from src.django_project.category_app.repository import DjangoORMCategoryRepository
 from src.django_project.genre_app.models import Genre as GenreModel
-from src.django_project.genre_app.repository import DjangoORMGenreRepository
+from src.django_project.genre_app.repository import (
+    DEFAULT_GENRE_LIST_ORDER,
+    DjangoORMGenreRepository,
+)
 
 BASE_GENRE_URL = "/api/genres/"
 
@@ -62,7 +64,12 @@ class TestListAPI:
                 expected_genres,
                 key=lambda item: item[order_by.strip("-")],
                 reverse=order_by.startswith("-"),
-            )
+            ),
+            "meta": {
+                "page": 1,
+                "total": 2,
+                "per_page": core_settings.REPOSITORY["page_size"],
+            }
         }
 
         response = APIClient().get(BASE_GENRE_URL, params)
@@ -73,7 +80,14 @@ class TestListAPI:
     def test_empty_list_genres_and_categories(
         self,
     ):
-        expected_data = {"data": []}
+        expected_data = {
+            "data": [],
+            "meta": {
+                "page": 1,
+                "total": 0,
+                "per_page": core_settings.REPOSITORY["page_size"],
+            },
+        }
 
         response = APIClient().get(path=BASE_GENRE_URL)
 
@@ -143,11 +157,16 @@ class TestListAPI:
             "page": page,
         }
 
-        expected_data = {
-            "data": expected_genres_per_page[page]
-        }
-
         overriden_page_size = 2
+
+        expected_data = {
+            "data": expected_genres_per_page[page],
+            "meta": {
+                "page": page,
+                "total": 5,
+                "per_page": overriden_page_size,
+            },
+        }
 
         url = "/api/genres/"
         with patch.dict(

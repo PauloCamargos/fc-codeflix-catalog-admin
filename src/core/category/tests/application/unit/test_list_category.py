@@ -1,9 +1,6 @@
 from unittest.mock import call, create_autospec
 
-from src.core.category.application.list_categories import (
-    DEFAULT_CATEGORY_LIST_ORDER,
-    ListCategories,
-)
+from src.core.category.application.list_categories import ListCategories
 from src.core.category.domain.category import Category
 from src.core.category.gateway.category_gateway import AbstractCategoryRepository
 
@@ -21,7 +18,7 @@ class TestListCategoryIntegration:
 
         assert repository.list.call_args_list == [
             call(
-                order_by=DEFAULT_CATEGORY_LIST_ORDER,
+                order_by=ListCategories.default_order_by_field,
                 page=1,
             ),
         ]
@@ -49,7 +46,7 @@ class TestListCategoryIntegration:
 
         assert repository.list.call_args_list == [
             call(
-                order_by=DEFAULT_CATEGORY_LIST_ORDER,
+                order_by=ListCategories.default_order_by_field,
                 page=1,
             ),
         ]

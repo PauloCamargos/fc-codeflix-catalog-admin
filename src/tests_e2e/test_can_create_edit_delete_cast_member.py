@@ -2,6 +2,7 @@ import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from src.core.shared import settings
 
 BASE_CAST_MEMBERS_URL = "/api/cast_members/"
 
@@ -15,7 +16,14 @@ def api_client() -> APIClient:
 class TestCreateAndEditDeleteCastMember:
     def test_user_can_create_and_edit_cast_member(self, api_client: APIClient) -> None:
         list_response = api_client.get(BASE_CAST_MEMBERS_URL)
-        assert list_response.data == {"data": []}
+        assert list_response.data == {
+            "data": [],
+            "meta": {
+                "page": 1,
+                "total": 0,
+                "per_page": settings.REPOSITORY["page_size"],
+            },
+        }
 
         create_response = api_client.post(
             BASE_CAST_MEMBERS_URL,
@@ -34,7 +42,12 @@ class TestCreateAndEditDeleteCastMember:
                     "name": "John Doe",
                     "type": "ACTOR",
                 }
-            ]
+            ],
+            "meta": {
+                "page": 1,
+                "total": 1,
+                "per_page": settings.REPOSITORY["page_size"],
+            },
         }
 
         edit_response = api_client.put(
@@ -52,7 +65,7 @@ class TestCreateAndEditDeleteCastMember:
                     "id": created_cast_member_id,
                     "name": "Jonathan Doe",
                     "type": "DIRECTOR",
-                }
+                },
             ]
         }
 

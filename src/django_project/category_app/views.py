@@ -23,34 +23,20 @@ from src.django_project.category_app.serializers import (
     CreateCategoryRequestSerializer,
     CreateCategoryResponseSerializer,
     DeleteCategoryRequestSerializer,
-    ListCategoryResponseSerializers,
+    ListCategoryResponseSerializer,
     RetrieveCategoryRequestSerializer,
     RetrieveCategoryResponseSerializer,
     UpdateCategoryRequestSerializer,
     UpdateCategoryResponseSerializer,
 )
+from src.django_project.shared.views import mixins
 
 
-class CategoryViewSet(viewsets.ViewSet):
-    def list(self, request: Request) -> Response:
-        input_params = {}
-        if "order_by" in request.query_params:
-            input_params["order_by"] = request.query_params["order_by"]
-        if "page" in request.query_params:
-            input_params["page"] = int(request.query_params["page"])
+class CategoryViewSet(viewsets.ViewSet, mixins.OrderedPaginatedListMixin):
+    repository_class = DjangoORMCategoryRepository
 
-        input = ListCategories.Input(**input_params)
-
-        use_case = ListCategories(repository=DjangoORMCategoryRepository())
-
-        output = use_case.execute(input=input)
-
-        serialized_categories = ListCategoryResponseSerializers(instance=output)
-
-        return Response(
-            status=status.HTTP_200_OK,
-            data=serialized_categories.data,
-        )
+    list_use_case_class = ListCategories
+    serializer_class = ListCategoryResponseSerializer
 
     def retrieve(self, request: Request, pk=None) -> Response:
         serializer_input = RetrieveCategoryRequestSerializer(data={"id": pk})

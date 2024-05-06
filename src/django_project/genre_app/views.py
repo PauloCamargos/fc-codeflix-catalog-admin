@@ -22,28 +22,14 @@ from src.django_project.genre_app.serializers import (
     UpdateGenreRequestSerializer,
     UpdateGenreResponseSerializer,
 )
+from src.django_project.shared.views import mixins
 
 
-class GenreViewSet(viewsets.ViewSet):
-    def list(self, request: Request) -> Response:
-        input_params = {}
-        if "order_by" in request.query_params:
-            input_params["order_by"] = request.query_params["order_by"]
-        if "page" in request.query_params:
-            input_params["page"] = int(request.query_params["page"])
+class GenreViewSet(viewsets.ViewSet, mixins.OrderedPaginatedListMixin):
+    repository_class = DjangoORMGenreRepository
 
-        input = ListGenres.Input(**input_params)
-
-        use_case = ListGenres(repository=DjangoORMGenreRepository())
-
-        output = use_case.execute(input=input)
-
-        serialized_genres = ListGenreResponseSerializers(instance=output)
-
-        return Response(
-            status=status.HTTP_200_OK,
-            data=serialized_genres.data,
-        )
+    list_use_case_class = ListGenres
+    serializer_class = ListGenreResponseSerializers
 
     def create(self, request: Request) -> Response:
         serializer_input = CreateGenreRequestSerializer(data=request.data)
